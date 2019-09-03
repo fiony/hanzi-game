@@ -4,68 +4,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <style>
-canvas {
-    border:2px solid #d3d3d3;
-    background-color: #f1f1f1;
-	position:relative;
-	top:50px;
-	left:50px;
-}
-button {
-  background-color: #4CAF50; /* Green */
-  border: none;
-  color: white;
-  padding: 15px 32px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 20px;
-}
-* {
-  box-sizing: border-box;
-}
-
-.img-container {
-  float: left;
-  width: 100%;
-  padding: 5px;
-  text-align: center;
-}
-
-.box {
-  width: 50%;
-  margin: 10px;
-  text-align: center;
-}
-.flex-container {
-  display: flex;
-  flex-wrap: nowrap;
-}
 </style>
 </head>
 <body onload="startGame()">
-<div class="flex-container">
-  <div class="box" style="">
-  	<button onclick="resetGame()", width=200, height=200>开始</button>
-    <br>
-    <canvas id="grid" ></canvas>
-  </div>
-  <div class="box" style="">
-  	<h2>登鹳雀楼</h2><p>王之涣</p>
-    <div class="img-container">
-    	<img src="poem.png" alt="登鹳雀楼" style="">
-    </div>
- </div>  
-</div>
 
-<!--canvas id="poem" width=500, height=500, style="background-color:#FFFFFF"></canvas-->
+<div class="w3-container w3-row">
+  <div class="w3-panel w3-half" style="">
+    <div class="w3-cell-row">
+        <button onclick="resetGame()" class="w3-button w3-xlarge w3-green w3-left w3-cell">开始</button>
+        <div class="w3-container w3-cell w3-center w3-red"><p>00:00.000</p></div>
+        <div class="w3-container w3-cell w3-right w3-blue"><p>--:--.---</p></div>
+    </div>
+    <div id="game area" class="w3-panel w3-center">
+      <canvas id="grid" style="width:100%"></canvas>
+    </div>
+  </div>
+  <div class="w3-panel w3-half" style="">
+    <div class="w3-card-4 w3-center w3-text-teal w3-sand" style="">
+         <h2>登鹳雀楼</h2>
+         <h4>王之涣</h4>
+    </div>
+    <div class="w3-card w3-center w3-light-grey" style="">
+    </div>    
+    <div class="w3-container w3-center">
+      <img src="poem.png" class="w3-padding" alt="" style="width:100%">
+    </div>
+  </div>  
+</div>
 
 <script>
 var poem = ["白日依山尽","黄河入海流","欲穷千里目","更上一层楼"];
 const HANZI_SIZE = 80;
 const NUM_DIRECT = 8;
-const MIN_INPUT_DISTANCE = HANZI_SIZE/2;
-var grid_num = 7;
+var MIN_INPUT_DISTANCE = HANZI_SIZE/2;
+var grid_num = 0;
 var allHanzi = [];
 var selected = [];
 var selected_dir = {x:0,y:0}
@@ -81,6 +53,11 @@ const GRADE6_HANZI="厦伐综砚锤焚协檐汇泽宣钮徐瞻帜袖挪谋辈脉
 var HANZI_SET=[GRADE1_HANZI, GRADE2_HANZI,GRADE3_HANZI,GRADE4_HANZI,GRADE5_HANZI,GRADE6_HANZI]
 
 function startGame() {
+   for(var i=0; i<poem.length; ++i)
+   {
+	  if(poem[i].length + 2 > grid_num)
+		grid_num = poem[i].length + 2;
+   }
    myGameArea.start();
 }
 
