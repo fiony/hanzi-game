@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<style>
+canvas {
+    border:2px solid #d3d3d3;
+    background-color: #f1f1f1;
+	position:relative;
+	top:50px;
+	left:50px;
+}
+button {
+  background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 20px;
+}
+* {
+  box-sizing: border-box;
+}
+
+.img-container {
+  float: left;
+  width: 100%;
+  padding: 5px;
+  text-align: center;
+}
+
+.box {
+  width: 50%;
+  margin: 10px;
+  text-align: center;
+}
+.flex-container {
+  display: flex;
+  flex-wrap: nowrap;
+}
+</style>
+</head>
+<body onload="startGame()">
+<div class="flex-container">
+  <div class="box" style="">
+  	<button onclick="resetGame()", width=200, height=200>开始</button>
+    <br>
+    <canvas id="grid" ></canvas>
+  </div>
+  <div class="box" style="">
+  	<h2>登鹳雀楼</h2><p>王之涣</p>
+    <div class="img-container">
+    	<img src="poem.png" alt="登鹳雀楼" style="">
+    </div>
+ </div>  
+</div>
+
+<!--canvas id="poem" width=500, height=500, style="background-color:#FFFFFF"></canvas-->
+
+<script>
+var poem = ["白日依山尽","黄河入海流","欲穷千里目","更上一层楼"];
+const HANZI_SIZE = 80;
+const NUM_DIRECT = 8;
+const MIN_INPUT_DISTANCE = HANZI_SIZE/2;
+var grid_num = 7;
+var allHanzi = [];
+var selected = [];
+var selected_dir = {x:0,y:0}
+var next_check = 0;
+var last_input_pos = {x:-1,y:-1};
+var is_gameover = false;
+const GRADE1_HANZI="一二三十木禾上下土个八入大天人火文六七儿九无口日中了子门月不开四五目耳头米见白田电也长山出飞马鸟云公车牛羊小少巾牙尺毛卜又心风力手水广升足走方半巴业本平书自已东西回片皮生里果几用鱼今正雨两瓜衣来年左右万百丁齐冬说友话春朋高你绿们花红草爷亲节的岁行古处声知多忙洗真认父扫母爸写全完关家看笑着兴画会妈合奶放午收女气太早去亮和李语秀千香听远唱定连向以更后意主总先起干明赶净同专工才级队蚂蚁前房空网诗黄林闭童立是我朵叶美机她过他时送让吗往吧得虫很河借姐呢呀哪谁凉怕量跟最园脸因阳为光可法石找办许别那到都吓叫再做象点像照沙海桥军竹苗井面乡忘想念王这从进边道贝男原爱虾跑吹乐地老快师短淡对热冷情拉活把种给吃练学习非苦常问伴间共伙汽分要没孩位选北湖南秋江只帮星请雪就球跳玩桃树刚兰座各带坐急名发成动晚新有么在变什条";
+const GRADE2_HANZI="宜实色华谷金尽层丰壮波浪灯作字苹丽劳尤其区巨它安块站已甲豆识纷经如好娃洼于首枝枫记刘胡戏棋钢观弹琴养休伸甜歌院除息您牵困员青宁室样校切教响班欠元包钟叹哈迟闹及身仔细次外计怦礼加夕与川州台争民族亿洁欢祖旗帜庆曲央交市旁优阴坛城国图申匹互京泪洋拥抱相扬讲打指接惊故侯奇寸落补拔功助取所信沿拾际蛙错答还言每治棵挂哇怪慢怎思穿弯比服浅漂啦啊夫表示号汗伤吸极串免告诉狐狸猴颗斤折挑根独满容易采背板椅但傍清消由术吐注课铅笔桌景拿坏松扎抓祝福句幸之令布直当第现期轮路丑永饥饱温贫富户亚角周床病始张寻哭良食双体操场份粉昨晴姑娘妹读舟乘音客何汪丛牢拍护保物鸡猫羽领捉理跃蹦灵晨失觉扔掉眼睛纸船久乎至死腰捡粒被并夜喜重味轻刻群卫运宇宙航舰冲晒池浮灾害黑器岸纹洞影倒游圆围杯件住须能飘必事历史灭克化代孙植厂产介农科技纺织脱冻溪棉探摇野躲解未追店枯徐烧荣菜宿冈世界轰笋芽喊呼唤弟哥骨抽拐浇终静躺谢渐微瓦泉然结股脆塔杜鹃冒雷迈迷迹叔锋滴洒泥泞扑托摸利铃弱末芬芳夏应该岛展建纱环绕胜隐约省茂盛吾季留杏密蜜坡搭摘钉沟龙寿泼敬脚凤束府夺扮伟够恩柏特鲜度凰色勾单宫雄烁辉另题漫哄骗尔仍便票式且煌志提朗喝刀求使英整而丹乌显丝眨陈斜含炉鸣银泊柳艺忽杆涛转吴窗岭绝烟流垂乱压越彩蝉蛛岩趴刨陆质厚沉逃阵虹蜘蛛册宝印埋铁底导盏稠针稀碰兄商挤决钱批报破碎滑继续封骄傲拎桶停聪胳膊甸晃荡叭玲狗糟梯楼肯脑筋讶谈望算此桩肥灰讨厌冰蛋壳鸭欺负鹅翅膀勺斗玉组珍珠数钻研睡距离油检查团斥责炎夸奖亡肉耐谜传染类严寒";
+const GRADE3_HANZI="坪坝戴招蝴蝶孔雀舞铜粗尾要装劲绒朝些钓察瓣拢掌趣爬峰顶似苍仰咱奋辫勇居郊散步胸脯渣或者敢惜低诚基突按摆弄准备侧胶卷辆秘杂社著藏悄闪坑臣推旅考秦纪遗究震促深忆异逢佳倍遥遍插精希却依拼命奔村抖丧磨坊扇枚邮爽柿仙梨菠萝粮紧杨艳内梦醒苏湿娇嫩强适昆播修致论试验袋证概减阻测括确误途超堂镜闲待阅腿随调简拜访具闻尘仆纳闷丘迎等止境授品暗降丈肢肌肤辽阔血液滋润创造县设参部横跨举击坚固栏案爪贵断楚孤帆蓝懒披划威武拣颜形状渔料辈汇欣赏映挡视线浸献药村软刮舌矛盾集持般架龟攻炮坦战神兵退挖鞋斧锯免屋抢难初管敌阶懂陶谦虚嘴恼怒吵感荒捧朴素值受愿姿势投况吞烈绪述普通鼓励育瓶系绳茶危险顺俩索激堵获矛担宽裕买猜糖即卡盼仁贴筝鹰端稳嚷橘墨斑闹宇宙荡衬赛拨警惕膝毫套倾探扎搂贯局昼耘未耕织桑蓬稚纶莓苔叮嘱排而幅却哈审肃晌悦悉诲例芝卵匀寸呆增隔壁搬烛慈肩捧匠伟砌跨创既毁固且案智慧登阶厅礼席灿烂党描敞椅议宾翠秆绣腹赤衫疾泛泡脱锐晃饲贪狭桂刺软触滑唇汁津腐虽味亭移泊愁旷萤簇烧喂盈寿合茄跪猛庙蹲镇须揉挨挤之莲胀姿仿裳翩随涛依否窃私汪类镜煤属珍诊职扶除疑效缺况编尝传延庆扬叠涌股螺旋桨掠励顾融腾掩盗铛偷碰株待窜撞桩捡锄魏箭猎雁弦悲惨愈痛";
+const GRADE4_HANZI="歇联雕厘甚鼻藏概淘楚侵衅驻抗鲁绍馆戒段务奔厉弛忧哀持慰谜梭狂赢益若凳锅替抄印嗓捆俯投轰隆爆叨役营占攻枪怒艰牺顽暴臂规膛仇鹭含岭帝辞陵猿啼殿廊漆栏昆爽阁辉煌葱朱痕堤哄驾耀亩丈拇镰笋伏丘折缝抚糖配饮钟程闯训选择验资源宋拴陷论尚潜舱绳绑铲拖亚匣挖鞋锯避倍庐瀑炉潮据罩薄闷沸踮犹浩崩霎余恢涨虎隙拂漾柄曲逐瞧型陈搏促企犯罪殊夹即碎改集付启抛剧翼纵跃挣距丧纽抉曾践获堡瘦纠掏乞轧躺饥质趵纯乏藻扁崇峻蜿蜒砖屯垒峭凝魄惠莺郭酒哺络绎桶吱旬拐缸酬俺歉仅治坦谓梯坚茏览械愧疚嫌辛嗅奈绒躯拯幼浑哑搏庞愣虑凭痒稿腔要摔跌胆辟遭殃责倔荒忍惫牵翘鬼吻递嘛港邦芜巫婆逼扮旱绸褂徒烦饶渠灌溉吩咐茅榨价榴慕矮浙罗呈郁聚适昏稍额估损皇组般征苏宏唐凡统销略奉执维予素浸凯遗硕贡圣协吁妻充孟帆唯偶鬓衰查克迫睫垫泣呜咽拳竭亿抵钢兽繁殖蔬炭蒸杀菌预疗捷购屏访辅邮贺羡宜恋妙";
+const GRADE5_HANZI="范刹镶裹泻镀润杰截溢则燃缘溜货奏衡诵杖超肌拘耽误哲仪悼逝餐枣搞冠骂嚼悟摊奥咳嗽拄槐耐挽饰腮洲陪检阅矫锁暂糕阻谊捣谣侦混吵耗嫂勒骏限鞭驰蹄茶貌杯跤尼艇叉耸寂梁寇晋挥葛尸悬崖斩磨罢豪屈沃刘龄匪拒醉剂施哼晕勉堪承吟残瑟捏扭胯郑拜租允厨颈缚稻贼畜鲸肢滤吨肺判胎宅蔽弃慎址掘搜骤糙朴燥钳嘻舀掺逗棍逮萝卜筷哗哇托批糟蹋尔肆痰核呻究律俊俏拢添沾倦谱符塞笠蓑戈晰介疆萎汲赖旦番锻炼雅勃艘航桅撕唬龇咧鸥瞄莱茵幽券蜡瞎陌盲键粼缕恬汹录扣潋滟亦抹置载循昙秉秧砸忌膑瞪惑讥讽蔑序率瑜遣渡策滔眺幔遮苇硫磺缆盔骼椎颌趾炙烤栎羚鸵椭政瞬琥珀蝇脂掸拭辣渗澎湃黏测伍坨啸劣酷袭僵倚秃塑豹覆莹援妄诡溃扯撤瓢褐聋疯委钧召狈赴伦典纳喻曼庸捅刁罚释绪漏抑榜寄噢杈监笛嗡惧凄憋惩樱狱";
+const GRADE6_HANZI="厦伐综砚锤焚协檐汇泽宣钮徐瞻帜袖挪谋辈脉漓澜瑕翡峦障筏绵凌酿剥妥帖藉偿馋媒诞埃渺矿赐慷慨滥睹礴丸岷咨询浏碟晖迪誉篇版皱歧谨巢梢暇茸甸屑掷俗瑞兆谚枕馒柜锈摩爹袄筒揪粥吉炕叙肤签缩脾册熄唉欠谅俱矣曰盂沧汤阀娱僻怖宪胖刑押舅绞彻迁鸿旺标炊葬权溅嘹魅萍敏滨拆申挠控嘲毅扛绘桨岔竣藐蔡羹煎诸妒督寨擂呐丞璧臣诺廉颇御侮辱袍荆祭乃涕洛碗伶俐徘徊裸兜蜷焰烘哎梗填橱烁魂搁帐怨掀寡揍魁霉勺熬鼎铸铭湛昌溶构寓矛盾誉吾履遂";
+var HANZI_SET=[GRADE1_HANZI, GRADE2_HANZI,GRADE3_HANZI,GRADE4_HANZI,GRADE5_HANZI,GRADE6_HANZI]
+
+function startGame() {
+   myGameArea.start();
+}
+
+function resetGame(){
+	Reset();
+	createPoem(poem);
+	createOther(1); 
+}
+
+function Reset(){
+	allHanzi = [];
+	selected = [];
+	selected_dir = {x:0,y:0}
+	next_check = 0;
+	last_input_pos = {x:-1,y:-1};
+	is_gameover = false;
+}
+
+var myPoemArea = {
+	canvas : document.getElementById("poem"),
+	start : function(){
+		this.canvas.width = 800;
+		this.canvas.height = 800;
+		this.context = this.canvas.getContext("2d");
+	}
+}
+
+var myGameArea = {
+  canvas : document.getElementById("grid"),
+  start : function() {
+    this.canvas.width = HANZI_SIZE * grid_num;
+    this.canvas.height = HANZI_SIZE * grid_num;
+    this.context = this.canvas.getContext("2d");
+    this.interval = setInterval(updateGameArea, 20);
+	this.tracking = false;
+	
+	window.addEventListener('touchmove', function (e) {
+	  myGameArea.x = e.touches[0].clientX;
+	  myGameArea.y = e.touches[0].clientY;
+	  checkGameOver();
+	})
+	window.addEventListener('mousemove', function (e) {
+      myGameArea.x = e.clientX;
+      myGameArea.y = e.clientY;
+	  checkGameOver();
+    })
+    window.addEventListener('mousedown', function (e) {
+      myGameArea.x = e.clientX;
+      myGameArea.y = e.clientY;
+	  myGameArea.tracking = true;
+	  checkGameOver();
+    })
+    window.addEventListener('mouseup', function (e) {
+      myGameArea.x = false;
+      myGameArea.y = false;
+	  checkGameOver();
+	  myGameArea.tracking = false;
+    })
+    window.addEventListener('touchstart', function (e) {
+      myGameArea.x = e.clientX;
+      myGameArea.y = e.clientY;
+	  myGameArea.tracking = true;
+	  checkGameOver();
+    })
+    window.addEventListener('touchend', function (e) {
+      myGameArea.x = false;
+      myGameArea.y = false;
+	  checkGameOver();
+	  myGameArea.tracking = false;
+    })	
+  },
+  clear : function() {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  }, 
+  update : function(){
+	this.context.lineWidth = 4;
+	this.context.strokeStyle = "#FF0000";
+	this.context.strokeRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+}
+
+
+function updateGameArea() {
+    myGameArea.clear();	
+	
+	for(i=0; i<allHanzi.length; ++i)
+		allHanzi[i].update();
+		
+	myGameArea.update();
+}
+
+function checkGameOver()
+{
+	if(is_gameover) return;
+	if(!myGameArea.tracking)
+	{
+		last_input_pos = {x:-HANZI_SIZE,y:-HANZI_SIZE};
+		return;
+	}
+		
+	if (myGameArea.x && myGameArea.y) 
+	{
+		// check and update selection
+		  var rect = myGameArea.canvas.getBoundingClientRect();
+		  x = myGameArea.x - rect.left;
+		  y = myGameArea.y - rect.top;
+		  if(x > 0 && x < rect.width && y > 0 && y < rect.height && 
+			 Math.sqrt((x-last_input_pos.x)*(x-last_input_pos.x) + (y-last_input_pos.y)*(y-last_input_pos.y)) > MIN_INPUT_DISTANCE)
+		  {
+			 updateSelection(x, y);
+			 last_input_pos.x = x;
+			 last_input_pos.y = y;
+		  }		  
+	}else
+	{
+		// check and clear selection
+		passed = checkSelection();
+		if(passed)
+		{
+			//TODO: show poem
+			next_check++;
+			if(next_check==poem.length)
+			{
+				gameOver();
+			}
+		}
+	}
+}
+
+function gameOver()
+{
+	for(var i=0; i<allHanzi.length; ++i)
+	{
+		if(!allHanzi[i].is_highlight)
+			allHanzi[i].frozen();
+	}
+	is_gameover = true;
+	//TODO: show shuffle
+}
+
+function updateSelection(x, y)
+{
+	for(var i = 0; i < allHanzi.length; ++i)
+	{
+		if(!allHanzi[i].is_highlight && allHanzi[i].isTouched(x,y))
+		{
+			if(checkSelectionDirection(i))
+			{
+				//selection is in the same straight line
+				allHanzi[i].highlight();
+				selected.push(i);
+				return;
+			}			
+		}
+	}
+}
+
+function checkSelectionDirection(index)
+{
+	var ix = Math.floor(index / grid_num);
+	var iy = index % grid_num;
+	if(selected.length < 1)
+	{
+		return true;
+	}
+	else if(selected.length < 2)
+	{
+		selected_dir.x = ix - Math.floor(selected[selected.length-1] / grid_num);
+		selected_dir.y = iy - selected[selected.length-1] % grid_num;
+		//console.log(selected_dir.x, selected_dir.y);
+		return true;
+	}
+	else
+	{
+		var delta_ix = ix - Math.floor(selected[selected.length-1] / grid_num);
+		var delta_iy = iy - selected[selected.length-1] % grid_num;
+		//console.log(delta_ix, delta_iy, selected_dir.x, selected_dir.y);
+		return delta_ix == selected_dir.x && delta_iy == selected_dir.y;
+	}
+}
+
+function checkSelection()
+{
+	var passed = false;
+	if(selected.length == poem[next_check].length)
+	{
+		var candidate = ''
+		for(var i=0; i<selected.length; ++i)
+		{
+			candidate = candidate.concat(allHanzi[selected[i]].text);
+		}
+		
+		passed = candidate==poem[next_check];	
+	}
+		
+	//console.log(candidate, poem[next_check], passed);
+	clearSelection(passed);
+	return passed;
+}
+
+function clearSelection(keep_highlight)
+{
+	if(!keep_highlight)
+	{
+		for(var i=0; i<selected.length; ++i)
+		{
+			allHanzi[selected[i]].lowlight();
+		}
+	}
+	selected = []	
+}
+
+function createPoem(p){		
+	for(var i=0; i<p.length; i+=1)
+	{
+		createSentence(p[i]);
+	}
+}
+
+
+function createSentence(s){
+	try_num = 0
+	while(true)
+	{
+		dir = Math.floor((Math.random() * NUM_DIRECT) - NUM_DIRECT / 2);
+		ix = Math.floor(Math.random() * grid_num);
+		iy = Math.floor(Math.random() * grid_num);
+		if(checkOrPlaceSentence(ix, iy, dir, s, false))
+		{
+			checkOrPlaceSentence(ix, iy, dir, s, true);
+			return
+		}
+		try_num++;
+	}
+	console.log("FAILED TO PLACE:", s)
+}
+
+function checkOrPlaceSentence(ix, iy, dir, s, place=false)
+{
+	var delta_ix = dir % 4 == 0 ? 0 : dir > 0 ? 1 : -1;	
+	var delta_iy = Math.abs(dir) == 2 ? 0 : Math.abs(dir) < 2 ? 1: -1;
+	for(var i = 0; i < s.length; ++i)
+	{
+		if(ix < 0 || ix >= grid_num || iy < 0 || iy >= grid_num)
+			return false
+		idx = ix * grid_num + iy;
+		if(allHanzi[idx]) return false;
+		if(place)
+		{
+			allHanzi[idx] = new hanzi(ix*HANZI_SIZE, iy*HANZI_SIZE, s.charAt(i), HANZI_SIZE);
+			console.log(ix,iy,s.charAt(i));
+		}
+		ix += delta_ix;
+		iy += delta_iy;
+	}
+	return true;
+}
+
+function createOther(level){
+	var candidates = HANZI_SET[level]
+	for(var i=0; i < grid_num; ++i)
+	{
+		for(var j=0; j < grid_num; ++j)
+		{
+			var idx = i * grid_num + j;
+			if(allHanzi[idx]) continue;
+			var k = Math.floor(Math.random() * candidates.length);
+			allHanzi[idx] = new hanzi(i*HANZI_SIZE, j*HANZI_SIZE, candidates.charAt(k), HANZI_SIZE);
+		}
+	}	
+}
+
+function hanzi(x, y, text, size=HANZI_SIZE){
+	this.size = size
+	this.x = x;
+	this.y = y
+	this.width = size;
+	this.height = size;
+	this.text = text;
+	this.font = size + 'px KaiTi';
+	this.bgcolor = "#f1f1f1";
+	this.textcolor = "#000000";
+	this.is_highlight = false;
+	
+	this.update = function(){
+		ctx = myGameArea.context;
+		
+		ctx.lineWidth = 1;
+		ctx.strokeStyle = "#808080";
+		ctx.strokeRect(this.x, this.y, this.width, this.height);
+		
+		if(this.is_highlight)
+		{
+			ctx.fillStyle = this.bgcolor;
+			ctx.fillRect(this.x, this.y, this.width, this.height);
+		}
+
+		ctx.font = this.font;
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+		ctx.fillStyle = this.textcolor;
+		ctx.fillText(this.text, this.x+(this.width/2), this.y+this.width/2);
+		
+
+	}
+	
+	this.isTouched = function(x, y){
+		return x > this.x && x < this.x + this.width && y > this.y && y < this.y + this.height;
+	}
+	
+	this.highlight = function() {
+		this.bgcolor = "#66CCFF";
+		this.textcolor = "#FF0000";
+		this.is_highlight = true;
+	}
+	
+	this.lowlight = function(){
+		this.bgcolor = "#f1f1f1";
+		this.textcolor = "#000000";
+		this.is_highlight = false;
+	}
+	
+	this.frozen = function()
+	{
+		this.textcolor = "#AAAAAA"
+	}
+}
+
+</script>
+<br>
+</body>
+</html>
