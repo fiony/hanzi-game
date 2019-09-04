@@ -105,6 +105,7 @@ function parseElapsedTime(elapsed){
 var stopWatch = {	
 	shortest_time : Number.NaN,
 	start : function(interval){
+		clearInterval(this.timer);
 		this.start_time = new Date().getTime();
 		//https://stackoverflow.com/questions/56144301/javascript-object-property-is-reported-as-undefined-by-method-called-with-setint
 		this.timer = setInterval(this.onTick.bind(this), interval);
