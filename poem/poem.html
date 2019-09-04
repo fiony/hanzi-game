@@ -12,8 +12,8 @@
   <div class="w3-panel w3-half" style="">
     <div class="w3-cell-row">
         <button onclick="resetGame()" class="w3-button w3-xlarge w3-green w3-left w3-cell">开始</button>
-        <div class="w3-container w3-cell w3-center w3-red"><p>00:00.000</p></div>
-        <div class="w3-container w3-cell w3-right w3-blue"><p>--:--.---</p></div>
+        <div id="curtime" class="w3-container w3-cell w3-center w3-red w3-xxlarge">00:00.000</div>
+        <div id="besttime" class="w3-container w3-cell w3-right w3-blue w3-xxlarge w3-text-orange">--:--.---</div>
     </div>
     <div id="game area" class="w3-panel w3-center">
       <canvas id="grid" style="width:100%"></canvas>
@@ -21,13 +21,13 @@
   </div>
   <div class="w3-panel w3-half" style="">
     <div class="w3-card-4 w3-center w3-text-teal w3-sand" style="">
-         <h2>登鹳雀楼</h2>
-         <h4>王之涣</h4>
+         <h1>登鹳雀楼</h1>
+         <h3>王之涣</h3>
     </div>
-    <div class="w3-card w3-center w3-light-grey" style="">
-    </div>    
-    <div class="w3-container w3-center">
+	<div class="w3-display-container w3-center">
       <img src="poem.png" class="w3-padding" alt="" style="width:100%">
+	  <div id="poem" class="w3-padding w3-display-topleft w3-card-4 w3-text-teal" style="writing-mode: vertical-rl;">
+	  </div>
     </div>
   </div>  
 </div>
@@ -58,13 +58,16 @@ function startGame() {
 	  if(poem[i].length + 2 > grid_num)
 		grid_num = poem[i].length + 2;
    }
+   myPoemArea.update();
    myGameArea.start();
 }
 
 function resetGame(){
 	Reset();
+	myPoemArea.update();
 	createPoem(poem);
-	createOther(1); 
+	createOther(1);
+	stopWatch.start(Math.floor(Math.random() * 23) + 61);
 }
 
 function Reset(){
@@ -76,12 +79,73 @@ function Reset(){
 	is_gameover = false;
 }
 
+function numberWithLeadingZero(num, m){
+	return String(num).padStart(m, "0");
+}
+
+function showHtmlElementById(id, show=true) {
+  var x = document.getElementById(id);
+  showHtmlElement(x, show);
+}
+
+function showHtmlElement(elem, show=true) {
+  if(show)
+	elem.style.display = "block";
+  else
+	elem.style.display = "none";
+}
+
+function parseElapsedTime(elapsed){
+	var minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+	var seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+	var milliseconds = elapsed % 1000;
+	return numberWithLeadingZero(minutes,2) + ":" + numberWithLeadingZero(seconds,2) + "." + numberWithLeadingZero(milliseconds, 3);
+}
+
+var stopWatch = {	
+	shortest_time : Number.NaN,
+	start : function(interval){
+		this.start_time = new Date().getTime();
+		//https://stackoverflow.com/questions/56144301/javascript-object-property-is-reported-as-undefined-by-method-called-with-setint
+		this.timer = setInterval(this.onTick.bind(this), interval);
+		this.elapsed_time = 0
+	},	
+	onTick : function(){
+		var now = new Date().getTime();
+		this.elapsed_time = now - this.start_time;
+		var	time_str = parseElapsedTime(this.elapsed_time);
+		document.getElementById("curtime").innerHTML = time_str;
+	},	
+	stop : function(){
+		clearInterval(this.timer);
+		if(Number.isNaN(this.shortest_time) || this.elapsed_time < this.shortest_time)
+		{
+			this.shortest_time = this.elapsed_time;
+			document.getElementById("besttime").innerHTML = parseElapsedTime(this.shortest_time);
+		}
+	},	
+}
+
 var myPoemArea = {
-	canvas : document.getElementById("poem"),
-	start : function(){
-		this.canvas.width = 800;
-		this.canvas.height = 800;
-		this.context = this.canvas.getContext("2d");
+	myNode : document.getElementById("poem"),
+	update : function(){
+		var to_show = next_check > 0;
+		var cur_idx = this.myNode.childElementCount;
+		while(next_check > cur_idx)
+		{
+			var node = document.createElement("H2");
+			var textnode = document.createTextNode(poem[cur_idx]);
+			node.appendChild(textnode);	
+			this.myNode.appendChild(node);
+			cur_idx++;
+		}		
+		if(next_check == 0)
+		{
+			while (this.myNode.firstChild) {
+				this.myNode.removeChild(this.myNode.firstChild);
+			}	
+		}
+		showHtmlElement(this.myNode, to_show);
 	}
 }
 
@@ -179,6 +243,7 @@ function checkGameOver()
 		{
 			//TODO: show poem
 			next_check++;
+			myPoemArea.update();
 			if(next_check==poem.length)
 			{
 				gameOver();
@@ -195,7 +260,7 @@ function gameOver()
 			allHanzi[i].frozen();
 	}
 	is_gameover = true;
-	//TODO: show shuffle
+	stopWatch.stop();
 }
 
 function updateSelection(x, y)
