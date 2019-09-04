@@ -3,7 +3,7 @@
 To find the poem hidden in the grid horizontally, vertically or diagonally.
 
 ### Snapshot
-![CrossPoem Screenshot](poem/poem.png)
+![CrossPoem Screenshot](poem/snapshot.png)
 
 
 #### Reference
