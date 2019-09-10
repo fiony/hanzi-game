@@ -9,22 +9,22 @@
 <body onload="startGame()">
 
 <div class="w3-container w3-row">
-  <div class="w3-panel w3-half" style="">
-    <div class="w3-cell-row">
+  <div id="left" class="w3-panel w3-half" style="" >
+    <div id="top" class="w3-cell-row">
         <button onclick="resetGame()" class="w3-button w3-xlarge w3-green w3-left w3-cell">开始</button>
         <div id="curtime" class="w3-container w3-cell w3-center w3-red w3-xxlarge">00:00.000</div>
         <div id="besttime" class="w3-container w3-cell w3-right w3-blue w3-xxlarge w3-text-orange">--:--.---</div>
     </div>
-    <div id="game area" class="w3-panel w3-center">
-      <canvas id="grid" style="width:100%"></canvas>
+    <div id="game area" class="w3-panel w3-center" style="">
+      <canvas id="grid" style="width:100%; height:100%"></canvas>
     </div>
   </div>
-  <div class="w3-panel w3-half" style="">
+  <div id="right" class="w3-panel w3-half" style="">
     <div class="w3-card-4 w3-center w3-text-teal w3-sand" style="">
          <h1>登鹳雀楼</h1>
          <h3>王之涣</h3>
     </div>
-	<div class="w3-display-container w3-center">
+	<div id="image" class="w3-display-container w3-center">
       <img src="poem.png" class="w3-padding" alt="" style="width:100%">
 	  <div id="poem" class="w3-padding w3-display-topleft w3-card-4 w3-text-teal" style="writing-mode: vertical-rl;">
 	  </div>
@@ -34,7 +34,7 @@
 
 <script>
 var poem = ["白日依山尽","黄河入海流","欲穷千里目","更上一层楼"];
-const HANZI_SIZE = 80;
+var HANZI_SIZE = 80;
 const NUM_DIRECT = 8;
 var MIN_INPUT_DISTANCE = HANZI_SIZE/2;
 var grid_num = 0;
@@ -152,9 +152,16 @@ var myPoemArea = {
 
 var myGameArea = {
   canvas : document.getElementById("grid"),
+  game_area : document.getElementById("game area"),
   start : function() {
-    this.canvas.width = HANZI_SIZE * grid_num;
-    this.canvas.height = HANZI_SIZE * grid_num;
+	// browser inner size
+	//var w = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+	//var h = window.innerHeight|| document.documentElement.clientHeight || document.body.clientHeight;
+	var size = this.game_area.offsetWidth;
+	HANZI_SIZE = Math.floor(size / grid_num);	
+    this.canvas.width = size;
+    this.canvas.height = size;
+	
     this.context = this.canvas.getContext("2d");
     this.interval = setInterval(updateGameArea, 20);
 	this.tracking = false;
@@ -192,13 +199,21 @@ var myGameArea = {
       myGameArea.y = false;
 	  checkGameOver();
 	  myGameArea.tracking = false;
-    })	
+    })
+	window.addEventListener('resize', function(e){
+		var size = myGameArea.game_area.offsetWidth;
+		HANZI_SIZE = Math.floor(size / grid_num);	
+		myGameArea.canvas.width = size;
+		myGameArea.canvas.height = size;
+		updateGameArea();
+		console.log("RESIZE", HANZI_SIZE, myGameArea.canvas.width, myGameArea.canvas.height)
+	});	
   },
   clear : function() {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }, 
   update : function(){
-	this.context.lineWidth = 4;
+	this.context.lineWidth = 5;
 	this.context.strokeStyle = "#FF0000";
 	this.context.strokeRect(0, 0, this.canvas.width, this.canvas.height);
   }
@@ -373,7 +388,7 @@ function checkOrPlaceSentence(ix, iy, dir, s, place=false)
 		if(allHanzi[idx]) return false;
 		if(place)
 		{
-			allHanzi[idx] = new hanzi(ix*HANZI_SIZE, iy*HANZI_SIZE, s.charAt(i), HANZI_SIZE);
+			allHanzi[idx] = new hanzi(ix, iy, s.charAt(i));
 			console.log(ix,iy,s.charAt(i));
 		}
 		ix += delta_ix;
@@ -391,26 +406,28 @@ function createOther(level){
 			var idx = i * grid_num + j;
 			if(allHanzi[idx]) continue;
 			var k = Math.floor(Math.random() * candidates.length);
-			allHanzi[idx] = new hanzi(i*HANZI_SIZE, j*HANZI_SIZE, candidates.charAt(k), HANZI_SIZE);
+			allHanzi[idx] = new hanzi(i, j, candidates.charAt(k));
 		}
 	}	
 }
 
-function hanzi(x, y, text, size=HANZI_SIZE){
-	this.size = size
-	this.x = x;
-	this.y = y
-	this.width = size;
-	this.height = size;
-	this.text = text;
-	this.font = size + 'px KaiTi';
+function hanzi(ix, iy, text){	
+	this.ix = ix;
+	this.iy = iy
+	this.text = text;	
 	this.bgcolor = "#f1f1f1";
 	this.textcolor = "#000000";
 	this.is_highlight = false;
 	
 	this.update = function(){
-		ctx = myGameArea.context;
-		
+		this.size = HANZI_SIZE;
+		this.x = this.ix * this.size;
+		this.y = this.iy * this.size;
+		this.width = this.size;
+		this.height = this.size;
+		this.font = this.size + 'px KaiTi';
+
+		ctx = myGameArea.context;		
 		ctx.lineWidth = 1;
 		ctx.strokeStyle = "#808080";
 		ctx.strokeRect(this.x, this.y, this.width, this.height);
@@ -426,8 +443,6 @@ function hanzi(x, y, text, size=HANZI_SIZE){
 		ctx.textBaseline = "middle";
 		ctx.fillStyle = this.textcolor;
 		ctx.fillText(this.text, this.x+(this.width/2), this.y+this.width/2);
-		
-
 	}
 	
 	this.isTouched = function(x, y){
