@@ -178,16 +178,19 @@ var myGameArea = {
     this.context = this.canvas.getContext("2d");
     this.interval = setInterval(updateGameArea, 20);
 	this.tracking = false;
+	this.mouseDownPos = {x:-1, y:-1};
 	
 	this.canvas.addEventListener('touchmove', function (e) {
-	  checkGameOver(e.touches[0].OffsetX, e.touches[0].OffsetY);
+	  var rect = myGameArea.canvas.getBoundingClientRect();
+	  checkGameOver(e.touches[0].clientX-rect.left, e.touches[0].clientY-rect.top);
+	  myGameArea.hasMoved = myGameArea.tracking;
 	})
 	this.canvas.addEventListener('mousemove', function (e) {
 	  checkGameOver(e.offsetX, e.offsetY);
     })
     this.canvas.addEventListener('mousedown', function (e) {
 	  myGameArea.tracking = true;
-	  checkGameOver(e.offsetX, e.offsetY);
+	  myGameArea.mouseDownPos = {x:e.offsetX, y:e.offsetY};	  
     })
     this.canvas.addEventListener('mouseup', function (e) {
 	  checkGameOver(false, false);
@@ -195,14 +198,16 @@ var myGameArea = {
     })
     this.canvas.addEventListener('touchstart', function (e) {
 	  myGameArea.tracking = true;
-	  checkGameOver(e.offsetX, e.offsetY);
+	  //checkGameOver(e.clientX, e.clientY);
     })
     this.canvas.addEventListener('touchend', function (e) {
 	  checkGameOver(false, false);
 	  myGameArea.tracking = false;
     })
 	this.canvas.addEventListener('click', function (e) {
-	  checkPinyinShow(e.offsetX, e.offsetY);
+		// only check when just click but not mousedown->mousemove->mouseup->click
+	  if(distance(e.offsetX, e.offsetY, myGameArea.mouseDownPos.x, myGameArea.mouseDownPos.y) < HANZI_SIZE/2)
+		checkPinyinShow(e.offsetX, e.offsetY);
     })
 	
 	window.addEventListener('resize', function(e){
@@ -248,6 +253,11 @@ function checkPinyinShow(x, y)
 	}
 }
 
+function distance(x1, y1, x2, y2)
+{
+	return Math.sqrt((x1-x2)*(x1-x2) + (y1-y2)*(y1-y2));
+}
+
 function checkGameOver(x, y)
 {
 	if(is_gameover) return;
@@ -256,13 +266,12 @@ function checkGameOver(x, y)
 		last_input_pos = {x:-HANZI_SIZE,y:-HANZI_SIZE};
 		return;
 	}
-		
 	if (x && y) 
 	{
 		// check and update selection
 		  var rect = myGameArea.canvas.getBoundingClientRect();
 		  if(x > 0 && x < rect.width && y > 0 && y < rect.height && 
-			 Math.sqrt((x-last_input_pos.x)*(x-last_input_pos.x) + (y-last_input_pos.y)*(y-last_input_pos.y)) > HANZI_SIZE)
+			 distance(x, y, last_input_pos.x, last_input_pos.y) > HANZI_SIZE/2)
 		  {
 			 updateSelection(x, y);
 			 last_input_pos.x = x;
