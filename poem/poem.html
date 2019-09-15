@@ -22,38 +22,32 @@
     </div>
   </div>
   <div id="right" class="w3-panel w3-half" style="">
-    <div class="w3-card-4 w3-center w3-text-teal w3-sand" style="">
-         <h1>登鹳雀楼</h1>
-         <h3>王之涣</h3>
-    </div>
+    <div id="title" class="w3-card-4 w3-center w3-text-teal w3-sand" style=""></div>
 	<div id="image" class="w3-display-container w3-center">
       <img src="poem.png" class="w3-padding" alt="" style="width:100%">
-	  <div id="poem" class="w3-padding w3-display-topleft w3-card-4 w3-text-teal" style="writing-mode: vertical-rl;">
-	  </div>
+	  <div id="poem" class="w3-padding w3-display-topleft w3-card-4 w3-text-teal" style="writing-mode: vertical-rl;"></div>
     </div>
   </div>  
 </div>
 <script type="text/javascript" src="./lib/pinyin4js.js" charset="utf-8"></script>
+<script type="text/javascript" src="./lib/primary_hanzi.js" charset="utf-8"></script>
 <script>
 var poem = ["白日依山尽","黄河入海流","欲穷千里目","更上一层楼"];
+var title = "登鹳雀楼"
+var author = "王之涣"
 var HANZI_SIZE = 80;
 const NUM_DIRECT = 8;
 const ShowEnum = Object.freeze({"PINYIN":1, "SIMPLE":2, "TRADITIONAL":3});
 var grid_num = 0;
 var allHanzi = [];
+var allText = [];
 var selected = [];
 var selected_dir = {x:0,y:0}
 var next_check = 0;
 var last_input_pos = {x:-1,y:-1};
 var is_gameover = false;
 var is_traditional = false;
-const GRADE1_HANZI="一二三十木禾上下土个八入大天人火文六七儿九无口日中了子门月不开四五目耳头米见白田电也长山出飞马鸟云公车牛羊小少巾牙尺毛卜又心风力手水广升足走方半巴业本平书自已东西回片皮生里果几用鱼今正雨两瓜衣来年左右万百丁齐冬说友话春朋高你绿们花红草爷亲节的岁行古处声知多忙洗真认父扫母爸写全完关家看笑着兴画会妈合奶放午收女气太早去亮和李语秀千香听远唱定连向以更后意主总先起干明赶净同专工才级队蚂蚁前房空网诗黄林闭童立是我朵叶美机她过他时送让吗往吧得虫很河借姐呢呀哪谁凉怕量跟最园脸因阳为光可法石找办许别那到都吓叫再做象点像照沙海桥军竹苗井面乡忘想念王这从进边道贝男原爱虾跑吹乐地老快师短淡对热冷情拉活把种给吃练学习非苦常问伴间共伙汽分要没孩位选北湖南秋江只帮星请雪就球跳玩桃树刚兰座各带坐急名发成动晚新有么在变什条";
-const GRADE2_HANZI="宜实色华谷金尽层丰壮波浪灯作字苹丽劳尤其区巨它安块站已甲豆识纷经如好娃洼于首枝枫记刘胡戏棋钢观弹琴养休伸甜歌院除息您牵困员青宁室样校切教响班欠元包钟叹哈迟闹及身仔细次外计怦礼加夕与川州台争民族亿洁欢祖旗帜庆曲央交市旁优阴坛城国图申匹互京泪洋拥抱相扬讲打指接惊故侯奇寸落补拔功助取所信沿拾际蛙错答还言每治棵挂哇怪慢怎思穿弯比服浅漂啦啊夫表示号汗伤吸极串免告诉狐狸猴颗斤折挑根独满容易采背板椅但傍清消由术吐注课铅笔桌景拿坏松扎抓祝福句幸之令布直当第现期轮路丑永饥饱温贫富户亚角周床病始张寻哭良食双体操场份粉昨晴姑娘妹读舟乘音客何汪丛牢拍护保物鸡猫羽领捉理跃蹦灵晨失觉扔掉眼睛纸船久乎至死腰捡粒被并夜喜重味轻刻群卫运宇宙航舰冲晒池浮灾害黑器岸纹洞影倒游圆围杯件住须能飘必事历史灭克化代孙植厂产介农科技纺织脱冻溪棉探摇野躲解未追店枯徐烧荣菜宿冈世界轰笋芽喊呼唤弟哥骨抽拐浇终静躺谢渐微瓦泉然结股脆塔杜鹃冒雷迈迷迹叔锋滴洒泥泞扑托摸利铃弱末芬芳夏应该岛展建纱环绕胜隐约省茂盛吾季留杏密蜜坡搭摘钉沟龙寿泼敬脚凤束府夺扮伟够恩柏特鲜度凰色勾单宫雄烁辉另题漫哄骗尔仍便票式且煌志提朗喝刀求使英整而丹乌显丝眨陈斜含炉鸣银泊柳艺忽杆涛转吴窗岭绝烟流垂乱压越彩蝉蛛岩趴刨陆质厚沉逃阵虹蜘蛛册宝印埋铁底导盏稠针稀碰兄商挤决钱批报破碎滑继续封骄傲拎桶停聪胳膊甸晃荡叭玲狗糟梯楼肯脑筋讶谈望算此桩肥灰讨厌冰蛋壳鸭欺负鹅翅膀勺斗玉组珍珠数钻研睡距离油检查团斥责炎夸奖亡肉耐谜传染类严寒";
-const GRADE3_HANZI="坪坝戴招蝴蝶孔雀舞铜粗尾要装劲绒朝些钓察瓣拢掌趣爬峰顶似苍仰咱奋辫勇居郊散步胸脯渣或者敢惜低诚基突按摆弄准备侧胶卷辆秘杂社著藏悄闪坑臣推旅考秦纪遗究震促深忆异逢佳倍遥遍插精希却依拼命奔村抖丧磨坊扇枚邮爽柿仙梨菠萝粮紧杨艳内梦醒苏湿娇嫩强适昆播修致论试验袋证概减阻测括确误途超堂镜闲待阅腿随调简拜访具闻尘仆纳闷丘迎等止境授品暗降丈肢肌肤辽阔血液滋润创造县设参部横跨举击坚固栏案爪贵断楚孤帆蓝懒披划威武拣颜形状渔料辈汇欣赏映挡视线浸献药村软刮舌矛盾集持般架龟攻炮坦战神兵退挖鞋斧锯免屋抢难初管敌阶懂陶谦虚嘴恼怒吵感荒捧朴素值受愿姿势投况吞烈绪述普通鼓励育瓶系绳茶危险顺俩索激堵获矛担宽裕买猜糖即卡盼仁贴筝鹰端稳嚷橘墨斑闹宇宙荡衬赛拨警惕膝毫套倾探扎搂贯局昼耘未耕织桑蓬稚纶莓苔叮嘱排而幅却哈审肃晌悦悉诲例芝卵匀寸呆增隔壁搬烛慈肩捧匠伟砌跨创既毁固且案智慧登阶厅礼席灿烂党描敞椅议宾翠秆绣腹赤衫疾泛泡脱锐晃饲贪狭桂刺软触滑唇汁津腐虽味亭移泊愁旷萤簇烧喂盈寿合茄跪猛庙蹲镇须揉挨挤之莲胀姿仿裳翩随涛依否窃私汪类镜煤属珍诊职扶除疑效缺况编尝传延庆扬叠涌股螺旋桨掠励顾融腾掩盗铛偷碰株待窜撞桩捡锄魏箭猎雁弦悲惨愈痛";
-const GRADE4_HANZI="歇联雕厘甚鼻藏概淘楚侵衅驻抗鲁绍馆戒段务奔厉弛忧哀持慰谜梭狂赢益若凳锅替抄印嗓捆俯投轰隆爆叨役营占攻枪怒艰牺顽暴臂规膛仇鹭含岭帝辞陵猿啼殿廊漆栏昆爽阁辉煌葱朱痕堤哄驾耀亩丈拇镰笋伏丘折缝抚糖配饮钟程闯训选择验资源宋拴陷论尚潜舱绳绑铲拖亚匣挖鞋锯避倍庐瀑炉潮据罩薄闷沸踮犹浩崩霎余恢涨虎隙拂漾柄曲逐瞧型陈搏促企犯罪殊夹即碎改集付启抛剧翼纵跃挣距丧纽抉曾践获堡瘦纠掏乞轧躺饥质趵纯乏藻扁崇峻蜿蜒砖屯垒峭凝魄惠莺郭酒哺络绎桶吱旬拐缸酬俺歉仅治坦谓梯坚茏览械愧疚嫌辛嗅奈绒躯拯幼浑哑搏庞愣虑凭痒稿腔要摔跌胆辟遭殃责倔荒忍惫牵翘鬼吻递嘛港邦芜巫婆逼扮旱绸褂徒烦饶渠灌溉吩咐茅榨价榴慕矮浙罗呈郁聚适昏稍额估损皇组般征苏宏唐凡统销略奉执维予素浸凯遗硕贡圣协吁妻充孟帆唯偶鬓衰查克迫睫垫泣呜咽拳竭亿抵钢兽繁殖蔬炭蒸杀菌预疗捷购屏访辅邮贺羡宜恋妙";
-const GRADE5_HANZI="范刹镶裹泻镀润杰截溢则燃缘溜货奏衡诵杖超肌拘耽误哲仪悼逝餐枣搞冠骂嚼悟摊奥咳嗽拄槐耐挽饰腮洲陪检阅矫锁暂糕阻谊捣谣侦混吵耗嫂勒骏限鞭驰蹄茶貌杯跤尼艇叉耸寂梁寇晋挥葛尸悬崖斩磨罢豪屈沃刘龄匪拒醉剂施哼晕勉堪承吟残瑟捏扭胯郑拜租允厨颈缚稻贼畜鲸肢滤吨肺判胎宅蔽弃慎址掘搜骤糙朴燥钳嘻舀掺逗棍逮萝卜筷哗哇托批糟蹋尔肆痰核呻究律俊俏拢添沾倦谱符塞笠蓑戈晰介疆萎汲赖旦番锻炼雅勃艘航桅撕唬龇咧鸥瞄莱茵幽券蜡瞎陌盲键粼缕恬汹录扣潋滟亦抹置载循昙秉秧砸忌膑瞪惑讥讽蔑序率瑜遣渡策滔眺幔遮苇硫磺缆盔骼椎颌趾炙烤栎羚鸵椭政瞬琥珀蝇脂掸拭辣渗澎湃黏测伍坨啸劣酷袭僵倚秃塑豹覆莹援妄诡溃扯撤瓢褐聋疯委钧召狈赴伦典纳喻曼庸捅刁罚释绪漏抑榜寄噢杈监笛嗡惧凄憋惩樱狱";
-const GRADE6_HANZI="厦伐综砚锤焚协檐汇泽宣钮徐瞻帜袖挪谋辈脉漓澜瑕翡峦障筏绵凌酿剥妥帖藉偿馋媒诞埃渺矿赐慷慨滥睹礴丸岷咨询浏碟晖迪誉篇版皱歧谨巢梢暇茸甸屑掷俗瑞兆谚枕馒柜锈摩爹袄筒揪粥吉炕叙肤签缩脾册熄唉欠谅俱矣曰盂沧汤阀娱僻怖宪胖刑押舅绞彻迁鸿旺标炊葬权溅嘹魅萍敏滨拆申挠控嘲毅扛绘桨岔竣藐蔡羹煎诸妒督寨擂呐丞璧臣诺廉颇御侮辱袍荆祭乃涕洛碗伶俐徘徊裸兜蜷焰烘哎梗填橱烁魂搁帐怨掀寡揍魁霉勺熬鼎铸铭湛昌溶构寓矛盾誉吾履遂";
-var HANZI_SET=[GRADE1_HANZI, GRADE2_HANZI,GRADE3_HANZI,GRADE4_HANZI,GRADE5_HANZI,GRADE6_HANZI]
+var LEVEL = 0;
 
 function toggleTraditional()
 {
@@ -61,7 +55,12 @@ function toggleTraditional()
 	document.getElementById("simpleBut").innerHTML = is_traditional ? '繁' : '简';
 	for(var i = 0; i < allHanzi.length; ++i)
 	{
-		allHanzi[i].toggleTraditional();
+		allHanzi[i].toggleTraditional(is_traditional);
+	}
+	
+	for(var i = 0; i < allText.length; ++i)
+	{
+		allText[i].toggleTraditional(is_traditional);
 	}
 }
 
@@ -71,7 +70,7 @@ function startGame() {
 	  if(poem[i].length + 2 > grid_num)
 		grid_num = poem[i].length + 2;
    }
-   myPoemArea.update();
+   myPoemArea.start(title, author, poem);
    myGameArea.start();
 }
 
@@ -79,7 +78,7 @@ function resetGame(){
 	Reset();
 	myPoemArea.update();
 	createPoem(poem);
-	createOther(1);
+	createOther(LEVEL);
 	stopWatch.start(Math.floor(Math.random() * 23) + 61);
 }
 
@@ -141,27 +140,53 @@ var stopWatch = {
 }
 
 var myPoemArea = {
-	myNode : document.getElementById("poem"),
+	myPoem : document.getElementById("poem"),
+	myTitle : document.getElementById("title"),
+
 	update : function(){
-		var to_show = next_check > 0;
-		var cur_idx = this.myNode.childElementCount;
-		while(next_check > cur_idx)
+		for(var i=0; i<this.myPoem.childElementCount; i++)
 		{
-			var node = document.createElement("H2");
-			var textnode = document.createTextNode(poem[cur_idx]);
-			node.appendChild(textnode);	
-			this.myNode.appendChild(node);
-			cur_idx++;
-		}		
-		if(next_check == 0)
-		{
-			while (this.myNode.firstChild) {
-				this.myNode.removeChild(this.myNode.firstChild);
-			}	
+			showHtmlElement(this.myPoem.childNodes[i], i < next_check);
 		}
-		showHtmlElement(this.myNode, to_show);
-	}
+		showHtmlElement(this.myPoem, next_check > 0);
+	},
+	start :  function(title, author, poem)	{
+		this.myTitle.append(CreateTextComponent("H1", title));
+		this.myTitle.append(CreateTextComponent("H3", author));
+		for(var i=0; i<poem.length; i++)
+			this.myPoem.append(CreateTextComponent("H2", poem[i]));
+			
+		this.update();		
+	}	
 }
+
+function CreateTextComponent(tag, text){
+	var node = document.createElement(tag);
+	allText.push(new TextComponent(text, is_traditional));
+	node.append(allText[allText.length-1].node);
+	return node;
+}
+
+function TextComponent(text, show_traditional){
+	this.show_traditional = show_traditional;
+	this.simple = text;
+	this.tradtional = Simple2Traditional(text);
+	this.node = document.createTextNode(text);	
+	
+	this.updateText = function(){
+		if(this.show_traditional)
+			this.node.nodeValue = this.tradtional;
+		else
+			this.node.nodeValue = this.simple;
+	}
+	this.updateText();
+	
+	this.toggleTraditional = function(show_traditional){
+		this.show_traditional = show_traditional;
+		this.updateText();
+	}	
+}
+	
 
 var myGameArea = {
   canvas : document.getElementById("grid"),
@@ -414,7 +439,7 @@ function checkOrPlaceSentence(ix, iy, dir, s, place=false)
 		if(allHanzi[idx]) return false;
 		if(place)
 		{
-			allHanzi[idx] = new hanzi(ix, iy, s.charAt(i));
+			allHanzi[idx] = new hanzi(ix, iy, s.charAt(i), is_traditional);
 			console.log(ix,iy,s.charAt(i));
 		}
 		ix += delta_ix;
@@ -424,7 +449,7 @@ function checkOrPlaceSentence(ix, iy, dir, s, place=false)
 }
 
 function createOther(level){
-	var candidates = HANZI_SET[level]
+	var candidates = GetPrimaryHanziSet(level)
 	for(var i=0; i < grid_num; ++i)
 	{
 		for(var j=0; j < grid_num; ++j)
@@ -432,7 +457,7 @@ function createOther(level){
 			var idx = i * grid_num + j;
 			if(allHanzi[idx]) continue;
 			var k = Math.floor(Math.random() * candidates.length);
-			allHanzi[idx] = new hanzi(i, j, candidates.charAt(k));
+			allHanzi[idx] = new hanzi(i, j, candidates.charAt(k), is_traditional);
 		}
 	}	
 }
@@ -445,14 +470,13 @@ function Simple2Traditional(zi){
 	return ChineseHelper.convertToTraditionalChinese(zi);	
 }
 
-function hanzi(ix, iy, zi){	
+function hanzi(ix, iy, zi, show_traditional){	
 	this.ix = ix;
 	this.iy = iy
 	this.bgcolor = "#f1f1f1";
 	this.textcolor = "#000000";
 	this.is_highlight = false;
 	this.show_pinyin = false;
-	this.show_traditional = is_traditional;
 	
 	this.togglePinyin = function(){
 		this.show_pinyin = !this.show_pinyin;
@@ -460,8 +484,8 @@ function hanzi(ix, iy, zi){
 		//console.log(this.show_pinyin, this.pinyin);
 	}
 	
-	this.toggleTraditional = function(){
-		this.show_traditional = !this.show_traditional;
+	this.toggleTraditional = function(is_traditional){
+		this.show_traditional = is_traditional;
 		this.updateText();
 	}
 	
