@@ -1,0 +1,66 @@
+AllPoems=
+{
+	"image_dir":"./data/img/",
+	"poems":[
+		{
+			"title"  : "登鹳雀楼",
+			"author" : "王之涣",
+			"content": ["白日依山尽","黄河入海流","欲穷千里目","更上一层楼"],
+			"image"  : "bai.jpg"
+		},
+		{
+			"title"  : "静夜思",
+			"author" : "李白",
+			"content": ["床前明月光","疑是地上霜","举头望明月","低头思故乡"],
+			"image"  : "jing.jpg"		
+		},	
+		{
+			"title"  : "登鹳雀楼",
+			"author" : "王之涣",
+			"content": ["白日依山尽","黄河入海流","欲穷千里目","更上一层楼"],
+			"image"  : "bai.jpg"
+		},
+		{
+			"title"  : "静夜思",
+			"author" : "李白",
+			"content": ["床前明月光","疑是地上霜","举头望明月","低头思故乡"],
+			"image"  : "jing.jpg"		
+		},
+		{
+			"title"  : "登鹳雀楼",
+			"author" : "王之涣",
+			"content": ["白日依山尽","黄河入海流","欲穷千里目","更上一层楼"],
+			"image"  : "bai.jpg"
+		},
+		{
+			"title"  : "静夜思",
+			"author" : "李白",
+			"content": ["床前明月光","疑是地上霜","举头望明月","低头思故乡"],
+			"image"  : "jing.jpg"		
+		},	
+		{
+			"title"  : "登鹳雀楼",
+			"author" : "王之涣",
+			"content": ["白日依山尽","黄河入海流","欲穷千里目","更上一层楼"],
+			"image"  : "bai.jpg"
+		},
+		{
+			"title"  : "静夜思",
+			"author" : "李白",
+			"content": ["床前明月光","疑是地上霜","举头望明月","低头思故乡"],
+			"image"  : "jing.jpg"		
+		},
+		{
+			"title"  : "登鹳雀楼",
+			"author" : "王之涣",
+			"content": ["白日依山尽","黄河入海流","欲穷千里目","更上一层楼"],
+			"image"  : "bai.jpg"
+		},
+		{
+			"title"  : "静夜思",
+			"author" : "李白",
+			"content": ["床前明月光","疑是地上霜","举头望明月","低头思故乡"],
+			"image"  : "jing.jpg"		
+		},		
+	]
+};
