@@ -12,6 +12,7 @@
 <script>
 
 var image_dir = AllPoems.image_dir;
+var audio_dir = AllPoems.audio_dir;
 var allCards = [];
 
 function render(){	
@@ -19,13 +20,24 @@ function render(){
 	for (var i=0; i <AllPoems.poems.length; ++i)
 	{
 		allCards.push(new card(AllPoems.poems[i]));
-		container.append(allCards[allCards.length-1].node);
+		container.append(allCards[allCards.length-1].card);
 	}
 }
 
 function card(poem){
 	this.poem = poem;
-	this.node = CreatePoemCard(this.poem.title, this.poem.author, this.poem.image);
+	var node = CreatePoemCard(this.poem.title, this.poem.author, this.poem.image);
+	this.card = node.card;
+	this.image = node.image;
+	this.image.onclick = (function () {
+		sessionStorage.setItem("data",JSON.stringify(this.poem));
+		sessionStorage.setItem("image_path", image_dir + this.poem.image);
+		if (this.poem.audio != undefined)
+			sessionStorage.setItem("audio_path", audio_dir + this.poem.audio);
+		else
+			sessionStorage.removeItem("audio_path");
+        location.href = "poem.html";
+    }).bind(this);
 }
 
 function CreatePoemCard(title, author, image){
@@ -37,8 +49,8 @@ function CreatePoemCard(title, author, image){
 	
 	var img = document.createElement("img");
 	img.setAttribute("src", image_dir + image);
-	img.setAttribute("style", "height:250");
-	img.setAttribute("class", "w3-image w3-circle w3-hover-shadow");
+	img.setAttribute("style", "height:250; cursor:pointer");	// for mouse hander genesture
+	img.setAttribute("class", "w3-image w3-circle w3-hover-shadow");	
 	
 	div.append(CreateText("h1", title));
 	div.append(img);
@@ -46,7 +58,7 @@ function CreatePoemCard(title, author, image){
 	
 	top.append(div);
 	
-	return top;
+	return { card: top, image : img};
 }
 
 function CreateText(tag, text){
