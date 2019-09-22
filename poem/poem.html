@@ -17,7 +17,7 @@
         <div class="w3-container w3-cell w3-center w3-red w3-xlarge w3-cell"><h3 id="curtime">00:00.000</h3></div>
         <div class="w3-container w3-cell w3-center w3-blue w3-xlarge w3-text-orange w3-cell"><h3 id="besttime">--:--.---</h3></div>		
 		<button onclick="location.href='index.html'" class="w3-button w3-xlarge w3-teal w3-right w3-round w3-cell w3-margin-left"><i class="fa fa-home"></i></button>
-		<button id="audioButn" class="w3-button w3-xlarge w3-teal w3-margin-left w3-cell w3-right w3-cell" style="display:none"><i class="fa fa-music"></i></button>
+		<button id="audioButn" class="w3-button w3-xlarge w3-round w3-teal w3-margin-left w3-cell w3-right w3-cell" style="display:none"><i class="fa fa-music"></i></button>
 		<button id="simpleButn" onclick="toggleTraditional()" class="w3-button w3-xlarge w3-round w3-teal w3-margin-left w3-right w3-cell">简</button>
     </div>
     <div id="game area" class="w3-panel w3-center" style="">
@@ -93,6 +93,9 @@ function startGame() {
 	  if(poem[i].length + 2 > grid_num)
 		grid_num = poem[i].length + 2;
    }
+   if(poem.length > grid_num)
+		grid_num = poem.length;
+		
    myPoemArea.start(title, author, poem);
    myGameArea.start();
 }
@@ -275,6 +278,10 @@ var myGameArea = {
 	  checkGameOver(false, false);
 	  myGameArea.tracking = false;
     })
+    window.addEventListener('mouseup', function (e) {
+	  checkGameOver(false, false);
+	  myGameArea.tracking = false;
+    })	
     this.canvas.addEventListener('touchstart', function (e) {
 	  myGameArea.tracking = true;
 	  //checkGameOver(e.clientX, e.clientY);
@@ -283,6 +290,10 @@ var myGameArea = {
 	  checkGameOver(false, false);
 	  myGameArea.tracking = false;
     })
+    window.addEventListener('touchend', function (e) {
+	  checkGameOver(false, false);
+	  myGameArea.tracking = false;
+    })	
 	this.canvas.addEventListener('click', function (e) {
 		// only check when just click but not mousedown->mousemove->mouseup->click
 	  if(distance(e.offsetX, e.offsetY, myGameArea.mouseDownPos.x, myGameArea.mouseDownPos.y) < HANZI_SIZE/2)
@@ -291,7 +302,7 @@ var myGameArea = {
 	
 	window.addEventListener('resize', function(e){
 		var size = myGameArea.game_area.offsetWidth;
-		HANZI_SIZE = Math.floor(size / grid_num);	
+		HANZI_SIZE = Math.floor(size / grid_num) + 1;	
 		myGameArea.canvas.width = size;
 		myGameArea.canvas.height = size;
 		for(i=0; i<allHanzi.length; ++i)

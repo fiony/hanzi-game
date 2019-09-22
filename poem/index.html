@@ -5,7 +5,18 @@
 </head>
 <body onload="render()">
 <div class="w3-container w3-teal">
-	<h1>诗词纵横</h1>
+	<h1>唐诗纵横</h1>
+</div>
+<div class="w3-bar w3-light-grey">
+  <button class="w3-bar-item w3-button w3-large" onclick="ChoosePoemType()">五言绝句<span class="w3-badge w3-green w3-small">10</span></button>
+  <!--<a href="#" class="w3-bar-item w3-button">Home</a>-->
+  <div class="w3-dropdown-hover">
+    <button class="w3-button w3-large">诗人<span class="w3-badge w3-green w3-small">10</span></button>
+    <div class="w3-dropdown-content w3-bar-block w3-white w3-card-4">
+      <!--<a href="#" class="w3-bar-item w3-button">Link 1</a>-->
+	  <button class="w3-bar-item w3-button w3-large" onclick="ChooseAuthor()">李白</button>
+    </div>
+  </div>
 </div>
 <div id="all" class="w3-row-padding w3-margin-top"></div>
 <script type="text/javascript" src="poems.json"></script>	
@@ -45,16 +56,27 @@ function CreatePoemCard(title, author, image){
 	top.setAttribute("class", "w3-col s2");
 	
 	var div = document.createElement("div");	
-	div.setAttribute("class", "w3-card-4 w3-center w3-sand");	
+	div.setAttribute("class", "w3-card-4 w3-center w3-sand");
 	
 	var img = document.createElement("img");
 	img.setAttribute("src", image_dir + image);
 	img.setAttribute("style", "height:250; cursor:pointer");	// for mouse hander genesture
 	img.setAttribute("class", "w3-image w3-circle w3-hover-shadow");	
 	
-	div.append(CreateText("h1", title));
+	var header = CreateText("h1", title);
+	
+	//TODO: need to keep the card same height and auto-adjust font-size to fit the card
+	if(title.length > 7)
+		header.style.fontSize = Number(15.0/title.length) + "vw";	//responsive text
+	else
+		header.style.fontSize = "2vw";
+	
+	var footer = CreateText("h2", author);
+	footer.style.fontSize = "1vw";
+	
+	div.append(header);
 	div.append(img);
-	div.append(CreateText("h2", author));
+	div.append(footer);
 	
 	top.append(div);
 	
@@ -64,6 +86,7 @@ function CreatePoemCard(title, author, image){
 function CreateText(tag, text){
 	var node = document.createElement(tag);
 	var txt = document.createTextNode(text);
+	//node.style.whiteSpace = "nowrap";
 	node.style.fontFamily="KaiTi";
 	node.append(txt);
 	return node
