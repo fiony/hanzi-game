@@ -11,8 +11,8 @@
   <!--<button class="w3-bar-item w3-button w3-large" onclick="ChoosePoemType()">五言绝句<span class="w3-badge w3-green w3-small">10</span></button>-->
   <!--<a href="#" class="w3-bar-item w3-button">Home</a>-->
   <div class="w3-dropdown-hover">
-    <button class="w3-button w3-large">诗人</button>
-    <div id="authors" class="w3-dropdown-content w3-bar-block w3-white w3-card-4">
+    <button class="w3-button w3-large w3-light-grey">诗人</button>
+    <div id="authors" class="w3-dropdown-content w3-bar-block w3-light-grey w3-card-4">
       <!--<a href="#" class="w3-bar-item w3-button">Link 1</a>-->
 	  <!--<button class="w3-bar-item w3-button w3-large" onclick="ChooseAuthor()">李白</button>-->
     </div>
@@ -28,7 +28,7 @@ var audio_dir = AllPoems.audio_dir;
 const POEM_TYPES = {"54":"五言绝句","58":"五言律诗", "74":"七言绝句", "78":"七言律诗"};
 const POEM_OTHER = "其他";
 const POEM_ALL = "全部";
-const MENU_AUTHOR_MIN_POEMS = 3;
+const MENU_AUTHOR_MIN_POEMS = 2;
 const MAX_TITLE_LEN = 7;
 
 function getPoemType(poem)
@@ -169,7 +169,7 @@ var poemsBoard = {
 		else{
 			alert("没有找到匹配的诗歌:" + selection);
 			this.renderCards(this.allCards);
-		}
+		}		
 	},
 	
 	renderCards : function (cards){
@@ -186,6 +186,7 @@ function createMenuItem(menuName, badgeText, functor)
 	span.append(document.createTextNode(badgeText));
 
 	var btn = document.createElement("button");
+	btn.setAttribute("id", menuName);
 	btn.setAttribute("class", "w3-bar-item w3-button w3-large");
 	btn.append(document.createTextNode(menuName));	
 	btn.append(span);
