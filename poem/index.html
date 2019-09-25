@@ -3,18 +3,18 @@
 	<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">		
 </head>
-<body onload="render()">
+<body onload="start()">
 <div class="w3-container w3-teal">
 	<h1>唐诗纵横</h1>
 </div>
-<div class="w3-bar w3-light-grey">
-  <button class="w3-bar-item w3-button w3-large" onclick="ChoosePoemType()">五言绝句<span class="w3-badge w3-green w3-small">10</span></button>
+<div id="menu" class="w3-bar w3-light-grey">
+  <!--<button class="w3-bar-item w3-button w3-large" onclick="ChoosePoemType()">五言绝句<span class="w3-badge w3-green w3-small">10</span></button>-->
   <!--<a href="#" class="w3-bar-item w3-button">Home</a>-->
   <div class="w3-dropdown-hover">
-    <button class="w3-button w3-large">诗人<span class="w3-badge w3-green w3-small">10</span></button>
-    <div class="w3-dropdown-content w3-bar-block w3-white w3-card-4">
+    <button class="w3-button w3-large">诗人</button>
+    <div id="authors" class="w3-dropdown-content w3-bar-block w3-white w3-card-4">
       <!--<a href="#" class="w3-bar-item w3-button">Link 1</a>-->
-	  <button class="w3-bar-item w3-button w3-large" onclick="ChooseAuthor()">李白</button>
+	  <!--<button class="w3-bar-item w3-button w3-large" onclick="ChooseAuthor()">李白</button>-->
     </div>
   </div>
 </div>
@@ -24,34 +24,200 @@
 
 var image_dir = AllPoems.image_dir;
 var audio_dir = AllPoems.audio_dir;
-var allCards = [];
+//var allCards = [];
+const POEM_TYPES = {"54":"五言绝句","58":"五言律诗", "74":"七言绝句", "78":"七言律诗"};
+const POEM_OTHER = "其他";
+const POEM_ALL = "全部";
+const MENU_AUTHOR_MIN_POEMS = 3;
+const MAX_TITLE_LEN = 7;
 
-function render(){	
-	var container = document.getElementById("all")
-	for (var i=0; i <AllPoems.poems.length; ++i)
+function getPoemType(poem)
+{
+	var col = 0;
+	var row = poem.length;
+	
+	for(var i = 0; i < poem.length; ++i)
 	{
-		allCards.push(new card(AllPoems.poems[i]));
-		container.append(allCards[allCards.length-1].card);
+		if(poem[i].length > col)
+			col = poem[i].length;
+	}
+	var idx = (col * 10 + row).toString();
+	if(POEM_TYPES[idx])
+		return POEM_TYPES[idx];
+	return POEM_OTHER;
+}
+
+function dictionary()
+{
+	this.keys = [];
+	this.vals = [];
+	
+	this.insert = function(k, v){
+		var idx = this.keys.indexOf(k);
+		if(idx < 0)
+		{
+			this.keys.push(k);
+			this.vals.push(v);
+		}else
+		{
+			this.vals[idx] = v;
+		}
+	}
+	
+	this.remove = function(k){
+		var idx = this.keys.indexOf(k);
+		if(idx >= 0){
+			this.keys.splice(idx,1);
+			this.vals.splice(idx,1);
+		}
+	}
+	
+	this.get = function(k){
+		var idx = this.keys.indexOf(k);
+		if(idx >= 0){
+			return this.vals[idx];
+		}else{
+			return undefined;
+		}
+	}
+	
+	this.has = function(k){
+		return this.keys.indexOf(k) >= 0;
+	}
+	
+	this.clear = function(){
+		this.keys.splice(0);
+		this.vals.splice(0);
+	}
+	
+	this.forEach = function(func){
+		for(var i=0; i < this.keys.length; ++i)
+		{
+			func(this.keys[i], this.vals[i]);
+		}
 	}
 }
 
-function card(poem){
-	this.poem = poem;
-	var node = CreatePoemCard(this.poem.title, this.poem.author, this.poem.image);
-	this.card = node.card;
-	this.image = node.image;
-	this.image.onclick = (function () {
-		sessionStorage.setItem("data",JSON.stringify(this.poem));
-		sessionStorage.setItem("image_path", image_dir + this.poem.image);
-		if (this.poem.audio != undefined)
-			sessionStorage.setItem("audio_path", audio_dir + this.poem.audio);
-		else
-			sessionStorage.removeItem("audio_path");
-        location.href = "poem.html";
-    }).bind(this);
+var poemsBoard = {
+	container : document.getElementById("all"),
+	menu : document.getElementById("menu"),
+	authors : document.getElementById("authors"),	
+	
+	start : function(poems){
+		this.allCards = [];
+		this.poemsByType = new dictionary();
+		this.poemsByAuthor = new dictionary();
+		this.poemsByTitle = new dictionary();
+		
+		for(var i=0; i<poems.length; ++i)
+		{
+			var card = new Card(poems[i]);
+			this.allCards.push(card);
+			//console.log(card.poem, this.allCards[this.allCards.length-1].poem);
+			
+			// parse poem by type
+			var type = getPoemType(poems[i].content);
+			//console.log(poems[i].title, type);
+			if(this.poemsByType.has(type)){
+				this.poemsByType.get(type).push(card);
+			}else{
+				this.poemsByType.insert(type, [card]);
+			}
+
+			// parse poem by author
+			var author = poems[i].author;
+			if(this.poemsByAuthor.has(author)){
+				this.poemsByAuthor.get(author).push(card);
+			}else{
+				this.poemsByAuthor.insert(author, [card]);
+			}
+			
+			// parse poem by title
+			var title = poems[i].title;
+			if(this.poemsByTitle.has(title)){
+				this.poemsByTitle.get(title).push(card);
+			}else{
+				this.poemsByTitle.insert(title, [card]);
+			}			
+		}
+
+		// create menu
+		this.menu.append( createMenuItem( POEM_ALL, Number(this.allCards.length), function(){poemsBoard.render(POEM_ALL)}));
+
+		this.poemsByType.forEach((function(type, poems){
+			this.menu.append(createMenuItem(type, Number(poems.length),function(){poemsBoard.render(type)}));
+		}).bind(this));
+		
+		this.poemsByAuthor.forEach((function(author, poems){
+			if(poems.length >= MENU_AUTHOR_MIN_POEMS)
+			{
+				this.authors.append(createMenuItem(author, Number(poems.length), function(){poemsBoard.render(author)}));
+			}
+		}).bind(this));
+	},
+	
+	render : function(selection){
+		if(selection == POEM_ALL){
+			this.renderCards(this.allCards);
+		}else if(this.poemsByType.has(selection)){
+			this.renderCards(this.poemsByType.get(selection));
+		}else if(this.poemsByAuthor.has(selection)){
+			this.renderCards(this.poemsByAuthor.get(selection));
+		}else if(this.poemsByTitle.has(selection)){
+			this.renderCards(this.poemsByTitle.get(selection));
+		}
+		else{
+			alert("没有找到匹配的诗歌:" + selection);
+			this.renderCards(this.allCards);
+		}
+	},
+	
+	renderCards : function (cards){
+		RemoveAllChild(this.container);
+		cards.forEach((function(c){this.container.append(c.card)}).bind(this));
+	}
 }
 
-function CreatePoemCard(title, author, image){
+function createMenuItem(menuName, badgeText, functor)
+{
+	//<button class="w3-bar-item w3-button w3-large" onclick="ChoosePoemType()">五言绝句<span class="w3-badge w3-green w3-small">10</span></button>
+	var span = document.createElement("span");
+	span.setAttribute("class", "w3-badge w3-green w3-small");
+	span.append(document.createTextNode(badgeText));
+
+	var btn = document.createElement("button");
+	btn.setAttribute("class", "w3-bar-item w3-button w3-large");
+	btn.append(document.createTextNode(menuName));	
+	btn.append(span);
+	
+	btn.onclick = functor;
+	
+	return btn;
+}
+
+function start(){
+	poemsBoard.start(AllPoems.poems);
+	poemsBoard.render(POEM_ALL);
+}
+
+function Card(poem){
+	this.card = CreatePoemCard(poem.title, poem.author, poem.image, 
+		function(){
+			sessionStorage.setItem("data",JSON.stringify(poem));
+			sessionStorage.setItem("image_path", image_dir + poem.image);
+			if (poem.audio != undefined)
+				sessionStorage.setItem("audio_path", audio_dir + poem.audio);
+			else
+				sessionStorage.removeItem("audio_path");
+			location.href = "poem.html";
+		}
+	);
+}
+Card.prototype.toString = function CardToHtml(){
+	return this.card.outerHTML;
+};
+
+function CreatePoemCard(title, author, image, functor){
 	var top = document.createElement("div");
 	top.setAttribute("class", "w3-col s2");
 	
@@ -61,15 +227,15 @@ function CreatePoemCard(title, author, image){
 	var img = document.createElement("img");
 	img.setAttribute("src", image_dir + image);
 	img.setAttribute("style", "height:250; cursor:pointer");	// for mouse hander genesture
-	img.setAttribute("class", "w3-image w3-circle w3-hover-shadow");	
-	
-	var header = CreateText("h1", title);
+	img.setAttribute("class", "w3-image w3-circle w3-hover-shadow");
+	img.onclick = functor;
 	
 	//TODO: need to keep the card same height and auto-adjust font-size to fit the card
-	if(title.length > 7)
-		header.style.fontSize = Number(15.0/title.length) + "vw";	//responsive text
-	else
-		header.style.fontSize = "2vw";
+	var show_title = title;
+	if(show_title.length > MAX_TITLE_LEN)
+		show_title = title.substr(0, MAX_TITLE_LEN-1) + "...";
+	var header = CreateText("h1", show_title);
+	header.style.fontSize = "2vw";	
 	
 	var footer = CreateText("h2", author);
 	footer.style.fontSize = "1vw";
@@ -79,8 +245,7 @@ function CreatePoemCard(title, author, image){
 	div.append(footer);
 	
 	top.append(div);
-	
-	return { card: top, image : img};
+	return top;
 }
 
 function CreateText(tag, text){
@@ -90,6 +255,12 @@ function CreateText(tag, text){
 	node.style.fontFamily="KaiTi";
 	node.append(txt);
 	return node
+}
+
+function RemoveAllChild(elem){
+	while (elem.firstChild) {
+		elem.removeChild(elem.firstChild);
+  }
 }
 
 </script>		
