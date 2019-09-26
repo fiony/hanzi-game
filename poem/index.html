@@ -1,7 +1,8 @@
 <html>
 <head>
 	<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">		
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
 </head>
 <body onload="start()">
 <div class="w3-container w3-teal">
@@ -17,6 +18,8 @@
 	  <!--<button class="w3-bar-item w3-button w3-large" onclick="ChooseAuthor()">李白</button>-->
     </div>
   </div>
+  <a href="#" id="search_btn" class="w3-bar-item w3-large w3-button w3-right w3-green"><i class="fa fa-search"></i></a>
+  <input id="search_txt" type="text" class="w3-input w3-bar-item w3-right" placeholder="搜索诗人/题目..">  
 </div>
 <div id="all" class="w3-row-padding w3-margin-top"></div>
 <script type="text/javascript" src="poems.json"></script>	
@@ -108,6 +111,8 @@ var poemsBoard = {
 	menu : document.getElementById("menu"),
 	authors : document.getElementById("authors"),
 	author_num : document.getElementById("author_num"),
+	search_btn : document.getElementById("search_btn"),
+	search_txt : document.getElementById("search_txt"),
 	
 	start : function(poems){
 		this.allCards = [];
@@ -167,10 +172,41 @@ var poemsBoard = {
 		
 		this.authors.append(createMenuItem(AUTHOR_OTHER, Number(this.otherAuthorPoems.length), function(){poemsBoard.render(AUTHOR_OTHER)}));
 		this.author_num.innerHTML = this.poemsByAuthor.size();
+		
+		//set search
+		var searchFunctor = (function(){
+			var query = this.search_txt.value;
+			var matched_poems = [];
+			var match_func = function(candidate, poems){
+				if(candidate.search(query) >= 0 )
+				{
+					matched_poems = matched_poems.concat(poems);
+				}
+			};			
+			this.poemsByAuthor.forEach(match_func);
+			this.poemsByTitle.forEach(match_func);
+			
+			if(matched_poems.length > 0){
+				this.renderCards(matched_poems);
+			}else{
+				alert("没有找到题目或诗人匹配:" + query);
+			}
+		}).bind(this);
+		
+		this.search_btn.onclick = searchFunctor;
+		this.search_txt.addEventListener("keyup", (function(event) {
+			// Number 13 is the "Enter" key on the keyboard
+			if (event.keyCode === 13) {
+			// Cancel the default action, if needed
+				event.preventDefault();
+				// Trigger the button element with a click
+				this.search_btn.click();
+			}
+		}).bind(this));
+		
 	},
 	
-	render : function(selection){
-		sessionStorage.setItem("selection", selection);
+	render : function(selection){		
 		if(selection == POEM_ALL){
 			this.renderCards(this.allCards);
 		}else if(selection == AUTHOR_OTHER){
@@ -181,12 +217,11 @@ var poemsBoard = {
 			this.renderCards(this.poemsByAuthor.get(selection));
 		}else if(this.poemsByTitle.has(selection)){
 			this.renderCards(this.poemsByTitle.get(selection));
+		}else{			
+			selection = undefined;
 		}
-		else{
-			alert("没有找到匹配的诗歌:" + selection);
-			this.renderCards(this.allCards);
-			sessionStorage.setItem("selection", POEM_ALL);
-		}		
+		if(selection)
+			sessionStorage.setItem("selection", selection);
 	},
 	
 	renderCards : function (cards){
