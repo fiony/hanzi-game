@@ -6,7 +6,7 @@ A "crossword" puzzle to find Chinese poem in the grid horizontally, vertically o
 #### Index Page
 - Catetory by Type, Author
 - Support search by Title, Author
-![CrossPoem Index](poem/index.png)
+![CrossPoem Index](poem/index.jpg)
 
 #### Game Page
 - Start: new game
@@ -14,7 +14,7 @@ A "crossword" puzzle to find Chinese poem in the grid horizontally, vertically o
 - Toggle between simplied/traditional Chinese
 - Click character to show Pinyin
 - Play poem recording
-![CrossPoem Game](poem/game.png)
+![CrossPoem Game](poem/game.jpg)
 
 
 ## 诗词纵横
