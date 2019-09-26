@@ -11,7 +11,7 @@
   <!--<button class="w3-bar-item w3-button w3-large" onclick="ChoosePoemType()">五言绝句<span class="w3-badge w3-green w3-small">10</span></button>-->
   <!--<a href="#" class="w3-bar-item w3-button">Home</a>-->
   <div class="w3-dropdown-hover">
-    <button class="w3-button w3-large w3-light-grey">诗人</button>
+    <button class="w3-button w3-large w3-light-grey">诗人<span id="author_num" class="w3-badge w3-green w3-small"></span></button>
     <div id="authors" class="w3-dropdown-content w3-bar-block w3-light-grey w3-card-4">
       <!--<a href="#" class="w3-bar-item w3-button">Link 1</a>-->
 	  <!--<button class="w3-bar-item w3-button w3-large" onclick="ChooseAuthor()">李白</button>-->
@@ -26,7 +26,8 @@ var image_dir = AllPoems.image_dir;
 var audio_dir = AllPoems.audio_dir;
 //var allCards = [];
 const POEM_TYPES = {"54":"五言绝句","58":"五言律诗", "74":"七言绝句", "78":"七言律诗"};
-const POEM_OTHER = "其他";
+const POEM_OTHER = "未分类";
+const AUTHOR_OTHER = "其他诗人";
 const POEM_ALL = "全部";
 const MENU_AUTHOR_MIN_POEMS = 2;
 const MAX_TITLE_LEN = 7;
@@ -51,6 +52,10 @@ function dictionary()
 {
 	this.keys = [];
 	this.vals = [];
+	
+	this.size = function(){
+		return this.keys.length;
+	}
 	
 	this.insert = function(k, v){
 		var idx = this.keys.indexOf(k);
@@ -101,13 +106,15 @@ function dictionary()
 var poemsBoard = {
 	container : document.getElementById("all"),
 	menu : document.getElementById("menu"),
-	authors : document.getElementById("authors"),	
+	authors : document.getElementById("authors"),
+	author_num : document.getElementById("author_num"),
 	
 	start : function(poems){
 		this.allCards = [];
 		this.poemsByType = new dictionary();
 		this.poemsByAuthor = new dictionary();
 		this.poemsByTitle = new dictionary();
+		this.otherAuthorPoems = [];
 		
 		for(var i=0; i<poems.length; ++i)
 		{
@@ -152,13 +159,22 @@ var poemsBoard = {
 			if(poems.length >= MENU_AUTHOR_MIN_POEMS)
 			{
 				this.authors.append(createMenuItem(author, Number(poems.length), function(){poemsBoard.render(author)}));
+			}else
+			{
+				this.otherAuthorPoems = this.otherAuthorPoems.concat(poems);
 			}
 		}).bind(this));
+		
+		this.authors.append(createMenuItem(AUTHOR_OTHER, Number(this.otherAuthorPoems.length), function(){poemsBoard.render(AUTHOR_OTHER)}));
+		this.author_num.innerHTML = this.poemsByAuthor.size();
 	},
 	
 	render : function(selection){
+		sessionStorage.setItem("selection", selection);
 		if(selection == POEM_ALL){
 			this.renderCards(this.allCards);
+		}else if(selection == AUTHOR_OTHER){
+			this.renderCards(this.otherAuthorPoems);
 		}else if(this.poemsByType.has(selection)){
 			this.renderCards(this.poemsByType.get(selection));
 		}else if(this.poemsByAuthor.has(selection)){
@@ -169,6 +185,7 @@ var poemsBoard = {
 		else{
 			alert("没有找到匹配的诗歌:" + selection);
 			this.renderCards(this.allCards);
+			sessionStorage.setItem("selection", POEM_ALL);
 		}		
 	},
 	
@@ -198,7 +215,12 @@ function createMenuItem(menuName, badgeText, functor)
 
 function start(){
 	poemsBoard.start(AllPoems.poems);
-	poemsBoard.render(POEM_ALL);
+	
+	var lastSelection = sessionStorage.getItem("selection");
+	if(lastSelection == undefined)
+		lastSelection = POEM_ALL;
+	
+	poemsBoard.render(lastSelection);
 }
 
 function Card(poem){
