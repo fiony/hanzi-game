@@ -1,22 +1,3 @@
-## CrossPoem
-
-A "crossword" puzzle to find Chinese poem in the grid horizontally, vertically or diagonally.
-
-### Demo
-#### Index Page
-- Catetory by Type, Author
-- Support search by Title, Author
-![CrossPoem Index](poem/index.jpg)
-
-#### Game Page
-- Start: new game
-- Timer and best time
-- Toggle between simplied/traditional Chinese
-- Click character to show Pinyin
-- Play poem recording
-![CrossPoem Game](poem/game.jpg)
-
-
 ## 诗词纵横
 
 在汉字方格迷宫中寻找完整的一首诗。诗句可以是横向、纵向或对角线方向。
@@ -25,7 +6,7 @@ A "crossword" puzzle to find Chinese poem in the grid horizontally, vertically o
 #### 目录页
 - 诗词菜单（按类别，作者）
 - 关键字搜索（按题目，作者）
-![CrossPoem Index](poem/index.png)
+![CrossPoem Index](poem/index.jpg)
 
 #### 游戏页
 - 开始:生成新的汉字迷宫
@@ -33,7 +14,25 @@ A "crossword" puzzle to find Chinese poem in the grid horizontally, vertically o
 - 汉字简繁体转换 
 - 诗词朗诵音频
 - 点击汉字显示拼音
-![CrossPoem Game](poem/game.png)
+![CrossPoem Game](poem/game.jpg)
+
+
+## CrossPoem
+
+A "crossword" puzzle to find Chinese poem in the grid horizontally, vertically or diagonally.
+
+### Demo
+#### Index Page
+- Catetory by Type, Author
+- Support search by Title, Author
+
+
+#### Game Page
+- Start: new game
+- Timer and best time
+- Toggle between simplied/traditional Chinese
+- Click character to show Pinyin
+- Play poem recording
 
 #### Reference
 - pinyin4js: [github](https://github.com/superbiger/pinyin4js)
