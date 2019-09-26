@@ -51,6 +51,23 @@ function getPoemType(poem)
 	return POEM_OTHER;
 }
 
+function start(){
+	poemsBoard.start(AllPoems.poems);
+	
+	var lastSelection = sessionStorage.getItem("selection");
+	if(lastSelection != undefined)
+	{
+		poemsBoard.render(lastSelection);
+	}else if(sessionStorage.getItem("cust_selection"))
+	{
+		var cust_selection = JSON.parse(sessionStorage.getItem("cust_selection"));
+		poemsBoard.renderIndex(cust_selection);
+	}else
+	{
+		poemsBoard.render(POEM_ALL);
+	}	
+}
+
 function dictionary()
 {
 	this.keys = [];
@@ -125,31 +142,29 @@ var poemsBoard = {
 		{
 			var card = new Card(poems[i]);
 			this.allCards.push(card);
-			//console.log(card.poem, this.allCards[this.allCards.length-1].poem);
 			
 			// parse poem by type
 			var type = getPoemType(poems[i].content);
-			//console.log(poems[i].title, type);
 			if(this.poemsByType.has(type)){
-				this.poemsByType.get(type).push(card);
+				this.poemsByType.get(type).push(i);
 			}else{
-				this.poemsByType.insert(type, [card]);
+				this.poemsByType.insert(type, [i]);
 			}
 
 			// parse poem by author
 			var author = poems[i].author;
 			if(this.poemsByAuthor.has(author)){
-				this.poemsByAuthor.get(author).push(card);
+				this.poemsByAuthor.get(author).push(i);
 			}else{
-				this.poemsByAuthor.insert(author, [card]);
+				this.poemsByAuthor.insert(author, [i]);
 			}
 			
 			// parse poem by title
 			var title = poems[i].title;
 			if(this.poemsByTitle.has(title)){
-				this.poemsByTitle.get(title).push(card);
+				this.poemsByTitle.get(title).push(i);
 			}else{
-				this.poemsByTitle.insert(title, [card]);
+				this.poemsByTitle.insert(title, [i]);
 			}			
 		}
 
@@ -174,7 +189,7 @@ var poemsBoard = {
 		this.author_num.innerHTML = this.poemsByAuthor.size();
 		
 		//set search
-		var searchFunctor = (function(){
+		var searchFunctor = (function(){			
 			var query = this.search_txt.value;
 			var matched_poems = [];
 			var match_func = function(candidate, poems){
@@ -184,10 +199,12 @@ var poemsBoard = {
 				}
 			};			
 			this.poemsByAuthor.forEach(match_func);
-			this.poemsByTitle.forEach(match_func);
-			
+			this.poemsByTitle.forEach(match_func);			
+		
 			if(matched_poems.length > 0){
-				this.renderCards(matched_poems);
+				this.renderIndex(matched_poems);
+				sessionStorage.setItem("cust_selection", JSON.stringify(matched_poems));
+				sessionStorage.removeItem("selection");
 			}else{
 				alert("没有找到题目或诗人匹配:" + query);
 			}
@@ -210,13 +227,13 @@ var poemsBoard = {
 		if(selection == POEM_ALL){
 			this.renderCards(this.allCards);
 		}else if(selection == AUTHOR_OTHER){
-			this.renderCards(this.otherAuthorPoems);
+			this.renderIndex(this.otherAuthorPoems);
 		}else if(this.poemsByType.has(selection)){
-			this.renderCards(this.poemsByType.get(selection));
+			this.renderIndex(this.poemsByType.get(selection));
 		}else if(this.poemsByAuthor.has(selection)){
-			this.renderCards(this.poemsByAuthor.get(selection));
+			this.renderIndex(this.poemsByAuthor.get(selection));
 		}else if(this.poemsByTitle.has(selection)){
-			this.renderCards(this.poemsByTitle.get(selection));
+			this.renderIndex(this.poemsByTitle.get(selection));
 		}else{			
 			selection = undefined;
 		}
@@ -224,9 +241,14 @@ var poemsBoard = {
 			sessionStorage.setItem("selection", selection);
 	},
 	
-	renderCards : function (cards){
+	renderCards : function(cards){
 		RemoveAllChild(this.container);
-		cards.forEach((function(c){this.container.append(c.card)}).bind(this));
+		cards.forEach((function(c){this.container.append(c.card)}).bind(this));	
+	},
+	
+	renderIndex : function (index){
+		RemoveAllChild(this.container);
+		index.forEach((function(i){this.container.append(this.allCards[i].card)}).bind(this));
 	}
 }
 
@@ -246,16 +268,6 @@ function createMenuItem(menuName, badgeText, functor)
 	btn.onclick = functor;
 	
 	return btn;
-}
-
-function start(){
-	poemsBoard.start(AllPoems.poems);
-	
-	var lastSelection = sessionStorage.getItem("selection");
-	if(lastSelection == undefined)
-		lastSelection = POEM_ALL;
-	
-	poemsBoard.render(lastSelection);
 }
 
 function Card(poem){
