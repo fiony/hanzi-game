@@ -6,7 +6,7 @@
 </head>
 <body onload="start()">
 <div class="w3-container w3-teal">
-	<h1>唐诗纵横</h1>
+	<h1>唐诗纵横<span id="subtitle" class="w3-large w3-margin-left"></span></h1>
 </div>
 <div id="menu" class="w3-bar w3-light-grey">
   <!--<button class="w3-bar-item w3-button w3-large" onclick="ChoosePoemType()">五言绝句<span class="w3-badge w3-green w3-small">10</span></button>-->
@@ -130,6 +130,7 @@ var poemsBoard = {
 	author_num : document.getElementById("author_num"),
 	search_btn : document.getElementById("search_btn"),
 	search_txt : document.getElementById("search_txt"),
+	subtitle : document.getElementById("subtitle"),
 	
 	start : function(poems){
 		this.allCards = [];
@@ -205,6 +206,7 @@ var poemsBoard = {
 				this.renderIndex(matched_poems);
 				sessionStorage.setItem("cust_selection", JSON.stringify(matched_poems));
 				sessionStorage.removeItem("selection");
+				this.subtitle.innerHTML = query;
 			}else{
 				alert("没有找到题目或诗人匹配:" + query);
 			}
@@ -237,8 +239,10 @@ var poemsBoard = {
 		}else{			
 			selection = undefined;
 		}
-		if(selection)
+		if(selection){		
 			sessionStorage.setItem("selection", selection);
+			this.subtitle.innerHTML = selection;
+		}
 	},
 	
 	renderCards : function(cards){
