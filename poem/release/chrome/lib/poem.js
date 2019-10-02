@@ -1,40 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
-<style>
-</style>
-</head>
-
-<body onload="startGame()">
-
-<div class="w3-container w3-row">
-  <div id="left" class="w3-panel w3-half" style="" >
-    <div id="top" class="w3-cell-row">
-        <button onclick="resetGame()" class="w3-button w3-xlarge w3-green w3-left w3-cell w3-round">开始</button>
-        <div class="w3-container w3-cell w3-center w3-red w3-xlarge w3-cell"><h3 id="curtime">00:00.000</h3></div>
-        <div class="w3-container w3-cell w3-center w3-blue w3-xlarge w3-text-orange w3-cell"><h3 id="besttime">--:--.---</h3></div>		
-		<button onclick="location.href='index.html'" class="w3-button w3-xlarge w3-teal w3-right w3-round w3-cell w3-margin-left"><i class="fa fa-home"></i></button>
-		<button id="audioButn" class="w3-button w3-xlarge w3-round w3-teal w3-margin-left w3-cell w3-right w3-cell" style="display:none"><i class="fa fa-music"></i></button>
-		<button id="simpleButn" onclick="toggleTraditional()" class="w3-button w3-xlarge w3-round w3-teal w3-margin-left w3-right w3-cell">简</button>
-    </div>
-    <div id="game area" class="w3-panel w3-center" style="">
-      <canvas id="grid" style="width:100%; height:100%"></canvas>
-    </div>
-  </div>
-  <div id="right" class="w3-panel w3-half" style="">
-    <div id="title" class="w3-card-4 w3-center w3-text-teal w3-sand" style=""></div>
-	<div id="image" class="w3-display-container w3-center">
-      <img id="img" class="w3-padding" alt="" style="width:100%">
-	  <div id="poem" class="w3-padding w3-display-topright w3-card-4 w3-text-teal w3-sand w3-opacity w3-xlarge" style="writing-mode: vertical-rl;"></div>
-    </div>
-  </div>  
-</div>
-<script type="text/javascript" src="./lib/pinyin4js.js" charset="utf-8"></script>
-<script type="text/javascript" src="./lib/primary_hanzi.js" charset="utf-8"></script>
-<script>
 //var poem = ["白日依山尽","黄河入海流","欲穷千里目","更上一层楼"];
 //var title = "登鹳雀楼"
 //var author = "王之涣"
@@ -56,10 +19,15 @@ var is_gameover = false;
 var is_traditional = false;
 var LEVEL = 0;
 
+document.getElementById("start").addEventListener("click", newGame);
+document.getElementById("again").addEventListener("click", startGame);
+document.getElementById("simple").addEventListener("click", toggleTraditional);
+
+
 function toggleTraditional()
 {
 	is_traditional = !is_traditional;
-	document.getElementById("simpleButn").innerHTML = is_traditional ? '繁' : '简';
+	document.getElementById("simple").innerHTML = is_traditional ? '繁' : '简';
 	for(var i = 0; i < allHanzi.length; ++i)
 	{
 		allHanzi[i].toggleTraditional(is_traditional);
@@ -71,12 +39,14 @@ function toggleTraditional()
 	}
 }
 
-function startGame() {
-   var data = JSON.parse(sessionStorage.getItem("data"));
+function newGame() {
+   var idx = Math.floor(Math.random() * AllPoems.poems.length);
+   var data = AllPoems.poems[idx];
    poem = data.content;
    title = data.title;
    author = data.author;
    
+   /*
    // image
    var image_path = sessionStorage.getItem("image_path");
    var img = document.getElementById("img");
@@ -86,8 +56,9 @@ function startGame() {
    var audio_path = sessionStorage.audio_path;
    if(audio_path){
 		poemAudio.start(audio_path);
-	}
-   
+   }
+	*/
+   grid_num = 0;
    for(var i=0; i<poem.length; ++i)
    {
 	  if(poem[i].length + 2 > grid_num)
@@ -95,17 +66,18 @@ function startGame() {
    }
    if(poem.length > grid_num)
 		grid_num = poem.length;
-		
+	
+   Reset();		
    myPoemArea.start(title, author, poem);
    myGameArea.start();
 }
 
-function resetGame(){
+function startGame(){
 	Reset();
 	myPoemArea.update();
 	createPoem(poem);
 	createOther(LEVEL);
-	stopWatch.start(Math.floor(Math.random() * 23) + 61);
+	stopWatch.start(100); //in ms: random_interval=Math.floor(Math.random() * 23) + 61
 }
 
 function Reset(){
@@ -115,6 +87,7 @@ function Reset(){
 	next_check = 0;
 	last_input_pos = {x:-1,y:-1};
 	is_gameover = false;
+	stopWatch.stop();
 }
 
 function numberWithLeadingZero(num, m){
@@ -136,8 +109,14 @@ function showHtmlElement(elem, show=true) {
 function parseElapsedTime(elapsed){
 	var minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
 	var seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
-	var milliseconds = elapsed % 1000;
+	var milliseconds = Math.floor(elapsed % 1000);
 	return numberWithLeadingZero(minutes,2) + ":" + numberWithLeadingZero(seconds,2) + "." + numberWithLeadingZero(milliseconds, 3);
+}
+
+function RemoveAllChild(elem){
+	while (elem.firstChild) {
+		elem.removeChild(elem.firstChild);
+  }
 }
 
 var poemAudio = {
@@ -165,33 +144,53 @@ var poemAudio = {
 	}
 }
 
+
 var stopWatch = {
-	//audio: new Audio('./data/tick.mp3'),
 	shortest_time : Number.NaN,
-	start : function(interval){
-		clearInterval(this.timer);
-		this.start_time = new Date().getTime();
-		//https://stackoverflow.com/questions/56144301/javascript-object-property-is-reported-as-undefined-by-method-called-with-setint
-		this.timer = setInterval(this.onTick.bind(this), interval);
-		this.elapsed_time = 0
-		//this.audio.play();
-		//this.audio.loop=true;
-	},	
-	onTick : function(){
-		var now = new Date().getTime();
-		this.elapsed_time = now - this.start_time;
-		var	time_str = parseElapsedTime(this.elapsed_time);
-		document.getElementById("curtime").innerHTML = time_str;
-	},	
+	elapsed_time : Number.NaN,
+	start_time : Number.NaN,
+	is_running : false,
+	
+	start : function(interval){		
+		if(this.is_running) return;
+		
+		this.interval = interval;
+		this.is_running = true;
+		this.start_time = Number.NaN;
+		this.last_tick = 0;
+		window.requestAnimationFrame(onFrame);
+	},
+	
+	onTick : function(now){
+		if( Number.isNaN(this.start_time) )
+			this.start_time = now;
+		
+		if(now - this.last_tick >= this.interval)
+		{
+			this.last_tick = now;
+			this.elapsed_time = now - this.start_time;
+			document.getElementById("curtime").innerHTML = parseElapsedTime(this.elapsed_time);			
+		}
+		
+		if(this.is_running)
+			window.requestAnimationFrame(onFrame);
+	},
+	
 	stop : function(){
-		//this.audio.pause();
-		clearInterval(this.timer);
-		if(Number.isNaN(this.shortest_time) || this.elapsed_time < this.shortest_time)
+		if(!this.is_running) return;
+		
+		this.is_running = false;
+		if(is_gameover && !Number.isNaN(this.elapsed_time) && (Number.isNaN(this.shortest_time) || this.elapsed_time < this.shortest_time))
 		{
 			this.shortest_time = this.elapsed_time;
 			document.getElementById("besttime").innerHTML = parseElapsedTime(this.shortest_time);
 		}
 	},	
+}
+
+
+function onFrame(now) {
+	stopWatch.onTick(now);
 }
 
 var myPoemArea = {
@@ -206,6 +205,8 @@ var myPoemArea = {
 		showHtmlElement(this.myPoem, next_check > 0);
 	},
 	start :  function(title, author, poem)	{
+		RemoveAllChild(this.myTitle);
+		RemoveAllChild(this.myPoem);
 		this.myTitle.append(CreateTextComponent("H1", title));
 		this.myTitle.append(CreateTextComponent("H3", author));
 		for(var i=0; i<poem.length; i++)
@@ -625,8 +626,3 @@ function hanzi(ix, iy, zi, show_traditional){
 		this.textcolor = "#AAAAAA"
 	}
 }
-
-</script>
-<br>
-</body>
-</html>

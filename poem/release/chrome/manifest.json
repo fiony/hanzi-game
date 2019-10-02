@@ -1,0 +1,10 @@
+  {
+    "name": "CrossPoem",
+    "version": "1.0",
+    "description": "Crossword Game with Chinese Poem",
+    "manifest_version": 2,
+    "browser_action": {
+      "default_icon": "poem.png"
+    },
+	"background": { "scripts": [ "background.js" ] }	
+  }
